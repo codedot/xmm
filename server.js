@@ -7,6 +7,6 @@ const key = env[id];
 console.log(id, key);
 
 xmm(id, balances => {
-	console.log(JSON.stringify(balances, null, 2));
+	console.log(balances);
 	process.exit();
 });
