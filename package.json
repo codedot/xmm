@@ -1,0 +1,8 @@
+{
+	"description": "Trading Bot for Ripple",
+	"author": "Anton Salikhmetov",
+	"repository": "codedot/xmm#ng",
+	"name": "xmm",
+	"version": "0.0.2",
+	"license": "UNLICENSED"
+}
