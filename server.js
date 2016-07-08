@@ -5,6 +5,6 @@ const id = env.XMM;
 const key = env[id];
 
 xmm.check(id).then(state => {
-	console.log(...state);
+	console.log(state);
 	process.exit();
 });
