@@ -2,21 +2,30 @@ const ripple = require("ripple-lib");
 
 function tick(ledger)
 {
-	var options = {
-		ledgerVersion: ledger.ledgerVersion
+	var id = this.xmm.id;
+	var time = ledger.ledgerTimestamp;
+	var version = ledger.ledgerVersion;
+	var opt = {
+		ledgerVersion: version
 	};
 
 	Promise.all([
-		this.getBalances(this.xmm.id, options),
-		this.getOrders(this.xmm.id, options)
-	]).then(result => this.emit("xmm", {
-		id: this.xmm.id,
-		ledger: ledger.ledgerVersion,
-		time: ledger.ledgerTimestamp,
-		balances: result[0],
-		orders: result[1],
-		actions: []
-	}));
+		this.getBalances(id, opt),
+		this.getOrders(id, opt)
+	]).then(result => {
+		var balances = result.shift();
+		var orders = result.shift();
+
+		this.emit("xmm", {
+			id: id,
+			ledger: version,
+			time: time,
+			balances: balances,
+			orders: orders,
+			paths: [],
+			actions: []
+		});
+	});
 }
 
 module.exports = config => {

@@ -1,6 +1,10 @@
 const xmm = require(".");
 
+var env = process.env;
+var id = env.XMM;
+var key = env[id];
+
 xmm({
-	id: process.env.XMM,
-	key: process.env[process.env.XMM]
+	id: id,
+	key: key
 }).on("xmm", update => console.log(update));
