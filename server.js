@@ -3,8 +3,6 @@ const xmm = require(".");
 const env = process.env;
 const id = env.XMM;
 const key = env[id];
+const api = xmm(id, key);
 
-xmm.check(id).then(state => {
-	console.log(state);
-	process.exit();
-});
+api.on("xmm", console.log);
