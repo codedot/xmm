@@ -4,11 +4,17 @@ const api = new ripple.RippleAPI({
 	server: "wss://s1.ripple.com:443"
 });
 
-function check(id, cb)
-{
-	api.connect().then(() => {
-		api.getBalances(id).then(cb);
-	});
-}
+exports.check = id => new Promise(resolve => {
+	api.once("ledger", ({ledgerVersion}) => {
+		var options = {ledgerVersion};
 
-module.exports = check;
+		console.log(id, ledgerVersion);
+
+		Promise.all([
+			api.getBalances(id, options),
+			api.getOrders(id, options)
+		]).then(state => resolve(state));
+	});
+
+	api.connect();
+});

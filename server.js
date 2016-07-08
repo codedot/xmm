@@ -4,9 +4,7 @@ const env = process.env;
 const id = env.XMM;
 const key = env[id];
 
-console.log(id, key);
-
-xmm(id, balances => {
-	console.log(balances);
+xmm.check(id).then(state => {
+	console.log(...state);
 	process.exit();
 });
