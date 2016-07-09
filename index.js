@@ -6,11 +6,18 @@ function check(api, id, param)
 	var saldo = api.getBalances(id, param).then(balances => {
 		state.saldo = balances;
 	});
+	var prices = saldo.then(() => {
+		var targets = [];
+
+		return Promise.all(targets).then(paths => {
+			state.prices = paths;
+		});
+	});
 	var book = api.getOrders(id, param).then(orders => {
 		state.book = orders;
 	});
 
-	return Promise.all([saldo, book]).then(() => {
+	return Promise.all([prices, book]).then(() => {
 		return state;
 	});
 }
