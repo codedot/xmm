@@ -1,30 +1,45 @@
 const ripple = require("ripple-lib");
 
+function check(api, id, param)
+{
+	var state = {};
+	var saldo = api.getBalances(id, param).then(balances => {
+		state.saldo = balances;
+	});
+	var book = api.getOrders(id, param).then(orders => {
+		state.book = orders;
+	});
+
+	return Promise.all([saldo, book]).then(() => {
+		return state;
+	});
+}
+
+function decide(api, id, ledger)
+{
+	var param = {
+		ledgerVersion: ledger
+	};
+
+	return check(api, id, param).then(state => {
+		state.actions = undefined;
+		return state;
+	});
+}
+
 function tick(ledger)
 {
 	var id = this.xmm.id;
 	var time = ledger.ledgerTimestamp;
-	var version = ledger.ledgerVersion;
-	var opt = {
-		ledgerVersion: version
-	};
 
-	Promise.all([
-		this.getBalances(id, opt),
-		this.getOrders(id, opt)
-	]).then(result => {
-		var balances = result.shift();
-		var orders = result.shift();
+	ledger = ledger.ledgerVersion;
 
-		this.emit("xmm", {
-			id: id,
-			ledger: version,
-			time: time,
-			balances: balances,
-			orders: orders,
-			paths: [],
-			actions: []
-		});
+	decide(this, id, ledger).then(state => {
+		state.id = id;
+		state.time = time;
+		state.ledger = ledger;
+		this.emit("xmm", state);
+		this.once("ledger", tick);
 	});
 }
 
@@ -34,7 +49,7 @@ module.exports = config => {
 	});
 
 	api.connect();
-	api.on("ledger", tick);
+	api.once("ledger", tick);
 	api.xmm = config;
 
 	return api;
