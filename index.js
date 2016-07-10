@@ -25,7 +25,18 @@ function setsaldo(state, balances)
 
 function setprices(state, paths)
 {
-	state.prices = paths;
+	var prices = {};
+
+	paths.forEach(path => {
+		path.forEach(pair => {
+			var src = pair.source.maxAmount;
+			var dst = pair.destination.amount;
+
+			console.log(src, dst);
+		});
+	});
+
+	state.prices = prices;
 }
 
 function setbook(state, orders)
@@ -37,21 +48,39 @@ function getroute(id, state, asset)
 {
 	var saldo = state.saldo;
 	var value = saldo[asset];
+	var dst = asset;
 	var amount = {};
+	var src = [];
 	var issuer;
 
 	value *= 0.01;
 	amount.value = value.toFixed(6);
 
-	asset = asset.split(":");
-	amount.currency = asset.shift();
+	dst = dst.split(":");
+	amount.currency = dst.shift();
 
-	issuer = asset.shift();
+	issuer = dst.shift();
 	if (issuer)
 		amount.counterparty = issuer;
 
+	for (let i in saldo) {
+		if (i != asset) {
+			let from = {};
+			let j = i.split(":");
+			let currency = j.shift();
+			let issuer = j.shift();
+
+			from.currency = currency;
+			if (issuer)
+				from.counterparty = issuer;
+
+			src.push(from);
+		}
+	}
+
 	return {
 		source: {
+			//currencies: src,
 			address: id
 		},
 		destination: {
@@ -114,6 +143,8 @@ function tick(ledger)
 		state.ledger = ledger;
 		this.emit("xmm", state);
 		this.once("ledger", tick);
+	}).catch(error => {
+		console.error(error);
 	});
 }
 
