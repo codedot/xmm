@@ -1,10 +1,33 @@
 const ripple = require("ripple-lib");
 
+function setsaldo(state, balances)
+{
+	var iou = 0;
+	var saldo = {};
+
+	balances.forEach(amount => {
+		var currency = amount.currency;
+		var issuer = amount.counterparty;
+		var value = parseFloat(amount.value);
+
+		if (issuer)
+			currency += ":" + issuer;
+
+		if (value > 0)
+			saldo[currency] = value;
+		else
+			iou += -value;
+	});
+
+	state.saldo = saldo;
+	state.iou = iou;
+}
+
 function check(api, id, param)
 {
 	var state = {};
 	var saldo = api.getBalances(id, param).then(balances => {
-		state.saldo = balances;
+		setsaldo(state, balances);
 	});
 	var prices = saldo.then(() => {
 		var targets = [];
