@@ -23,6 +23,20 @@ function setsaldo(state, balances)
 	state.iou = iou;
 }
 
+function setprices(state, paths)
+{
+	state.prices = paths;
+}
+
+function setbook(state, orders)
+{
+	state.book = orders;
+}
+
+function getroute(id, state, asset)
+{
+}
+
 function check(api, id, param)
 {
 	var state = {};
@@ -32,12 +46,19 @@ function check(api, id, param)
 	var prices = saldo.then(() => {
 		var targets = [];
 
+		for (let asset in state.saldo) {
+			let route = getroute(id, state, asset);
+
+			targets.push(route);
+			//targets.push(api.getPaths(route));
+		}
+
 		return Promise.all(targets).then(paths => {
-			state.prices = paths;
+			setprices(state, paths);
 		});
 	});
 	var book = api.getOrders(id, param).then(orders => {
-		state.book = orders;
+		setbook(state, orders);
 	});
 
 	return Promise.all([prices, book]).then(() => {
