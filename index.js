@@ -35,6 +35,30 @@ function setbook(state, orders)
 
 function getroute(id, state, asset)
 {
+	var saldo = state.saldo;
+	var value = saldo[asset];
+	var amount = {};
+	var issuer;
+
+	value *= 0.01;
+	amount.value = value.toFixed(6);
+
+	asset = asset.split(":");
+	amount.currency = asset.shift();
+
+	issuer = asset.shift();
+	if (issuer)
+		amount.counterparty = issuer;
+
+	return {
+		source: {
+			address: id
+		},
+		destination: {
+			address: id,
+			amount: amount
+		}
+	};
 }
 
 function check(api, id, param)
@@ -49,8 +73,7 @@ function check(api, id, param)
 		for (let asset in state.saldo) {
 			let route = getroute(id, state, asset);
 
-			targets.push(route);
-			//targets.push(api.getPaths(route));
+			targets.push(api.getPaths(route));
 		}
 
 		return Promise.all(targets).then(paths => {
