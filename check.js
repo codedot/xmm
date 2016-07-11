@@ -1,6 +1,7 @@
 module.exports = api => {
 	const config = api.xmm;
 	const id = config.id;
+	const delta = config.delta;
 	const opt = {
 		ledgerVersion: config.ledger
 	};
@@ -23,9 +24,30 @@ module.exports = api => {
 	});
 	const pprices = psaldo.then(() => {
 		const targets = [];
+		const saldo = state.saldo;
+
+		for (let asset in saldo) {
+			const value = delta * saldo[asset];
+			const amount = {
+				currency: asset,
+				value: value.toFixed(6)
+			};
+			const route = {
+				source: {
+					address: id
+				},
+				destination: {
+					address: id,
+					amount: amount
+				}
+			};
+			const ppaths = api.getPaths(route);
+
+			targets.push(ppaths);
+		}
 
 		return Promise.all(targets).then(prices => {
-			state.prices = undefined;
+			state.prices = prices;
 		});
 	});
 	const pbook = api.getOrders(id, opt).then(book => {
