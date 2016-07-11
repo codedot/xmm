@@ -1,36 +1,6 @@
 const ripple = require("ripple-lib");
 
-function check(api, id, opt)
-{
-	const state = {};
-	const psaldo = api.getBalances(id, opt).then(saldo => {
-		state.saldo = saldo;
-	});
-	const pprices = psaldo.then(() => {
-		const targets = [];
-
-		return Promise.all(targets).then(prices => {
-			state.prices = prices;
-		});
-	});
-	const pbook = api.getOrders(id, opt).then(book => {
-		state.book = book;
-	});
-
-	return Promise.all([pprices, pbook]).then(() => {
-		return state;
-	});
-}
-
-function decide(api, id, ledger)
-{
-	return check(api, id, {
-		ledgerVersion: ledger
-	}).then(state => {
-		state.actions = undefined;
-		return state;
-	});
-}
+const decide = require("./decide");
 
 function tick(ledger)
 {
