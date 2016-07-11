@@ -5,7 +5,10 @@ module.exports = api => {
 	const opt = {
 		ledgerVersion: config.ledger
 	};
-	const state = {};
+	const raw = {};
+	const state = {
+		raw: raw
+	};
 	const psaldo = api.getBalances(id, opt).then(saldo => {
 		const dict = {};
 		var iou = 0;
@@ -21,6 +24,7 @@ module.exports = api => {
 
 		state.saldo = dict;
 		state.iou = iou;
+		raw.balances = saldo;
 	});
 	const pprices = psaldo.then(() => {
 		const targets = [];
@@ -47,11 +51,13 @@ module.exports = api => {
 		}
 
 		return Promise.all(targets).then(prices => {
-			state.prices = prices;
+			state.prices = undefined;
+			raw.paths = prices;
 		});
 	});
 	const pbook = api.getOrders(id, opt).then(book => {
 		state.book = undefined;
+		raw.orders = book;
 	});
 
 	return Promise.all([pprices, pbook]).then(() => {
