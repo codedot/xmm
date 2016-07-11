@@ -1,4 +1,9 @@
-module.exports = (api, id, opt) => {
+module.exports = api => {
+	const config = api.xmm;
+	const id = config.id;
+	const opt = {
+		ledgerVersion: config.ledger
+	};
 	const state = {};
 	const psaldo = api.getBalances(id, opt).then(saldo => {
 		state.saldo = saldo;

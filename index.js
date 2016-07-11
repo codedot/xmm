@@ -6,7 +6,6 @@ function tick(ledger)
 {
 	const api = this;
 	const config = api.xmm;
-	const id = config.id;
 	const deadline = config.deadline;
 	const time = ledger.ledgerTimestamp;
 
@@ -16,8 +15,8 @@ function tick(ledger)
 		return;
 	}
 
-	decide(api, id, ledger).then(state => {
-		state.id = id;
+	config.ledger = ledger;
+	decide(api).then(state => {
 		state.time = time;
 		state.ledger = ledger;
 		api.emit("xmm", state);

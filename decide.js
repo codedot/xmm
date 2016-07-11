@@ -1,8 +1,6 @@
 const check = require("./check");
 
-module.exports = (api, id, ledger) => check(api, id, {
-	ledgerVersion: ledger
-}).then(state => {
+module.exports = api => check(api).then(state => {
 	state.actions = undefined;
 	return state;
 });
