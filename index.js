@@ -29,7 +29,7 @@ function tick(ledger)
 
 module.exports = config => {
 	const api = new ripple.RippleAPI({
-		server: "wss://s1.ripple.com",
+		server: "wss://s1.ripple.com"
 	});
 
 	api.connect();
