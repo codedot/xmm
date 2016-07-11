@@ -27,6 +27,7 @@ module.exports = api => {
 		raw.balances = saldo;
 	});
 	const pprices = psaldo.then(() => {
+		const dict = {};
 		const targets = [];
 		const saldo = state.saldo;
 
@@ -48,10 +49,37 @@ module.exports = api => {
 			const ppaths = api.getPaths(route);
 
 			targets.push(ppaths);
+			dict[asset] = {};
 		}
 
 		return Promise.all(targets).then(prices => {
-			state.prices = undefined;
+			prices.forEach(row => {
+				row.forEach(cell => {
+					var gain = 1;
+					var from, into, src, dst;
+					var oldsrc, olddst;
+
+					src = cell.source;
+					src = src.maxAmount;
+					from = src.currency;
+					oldsrc = saldo[from];
+					src = src.value;
+					src = parseFloat(src);
+					gain *= 1 - src / oldsrc;
+
+					dst = cell.destination;
+					dst = dst.amount;
+					into = dst.currency;
+					olddst = saldo[into];
+					dst = dst.value;
+					dst = parseFloat(dst);
+					gain *= 1 + dst / olddst;
+
+					dict[from][into] = gain;
+				});
+			});
+
+			state.prices = dict;
 			raw.paths = prices;
 		});
 	});

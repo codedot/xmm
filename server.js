@@ -12,6 +12,6 @@ xmm({
 	delta: 0.01,
 	deadline: 0
 }).on("xmm", update => {
-	console.info(update);
+	console.info(update.prices);
 	process.exit();
 });
