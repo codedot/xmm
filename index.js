@@ -1,34 +1,32 @@
 const ripple = require("ripple-lib");
 
-function check(api, id, param)
+function check(api, id, opt)
 {
-	var state = {};
-	var saldo = api.getBalances(id, param).then(balances => {
-		state.balances = balances;
+	const state = {};
+	const psaldo = api.getBalances(id, opt).then(saldo => {
+		state.saldo = saldo;
 	});
-	var prices = saldo.then(() => {
-		var targets = [];
+	const pprices = psaldo.then(() => {
+		const targets = [];
 
-		return Promise.all(targets).then(paths => {
-			state.paths = paths;
+		return Promise.all(targets).then(prices => {
+			state.prices = prices;
 		});
 	});
-	var book = api.getOrders(id, param).then(orders => {
-		state.orders = orders;
+	const pbook = api.getOrders(id, opt).then(book => {
+		state.book = book;
 	});
 
-	return Promise.all([prices, book]).then(() => {
+	return Promise.all([pprices, pbook]).then(() => {
 		return state;
 	});
 }
 
 function decide(api, id, ledger)
 {
-	var param = {
+	return check(api, id, {
 		ledgerVersion: ledger
-	};
-
-	return check(api, id, param).then(state => {
+	}).then(state => {
 		state.actions = undefined;
 		return state;
 	});
@@ -36,31 +34,32 @@ function decide(api, id, ledger)
 
 function tick(ledger)
 {
-	var config = this.xmm;
-	var id = config.id;
-	var deadline = config.deadline;
-	var time = ledger.ledgerTimestamp;
+	const api = this;
+	const config = api.xmm;
+	const id = config.id;
+	const deadline = config.deadline;
+	const time = ledger.ledgerTimestamp;
 
 	ledger = ledger.ledgerVersion;
 	if (ledger <= deadline) {
-		this.once("ledger", tick);
+		api.once("ledger", tick);
 		return;
 	}
 
-	decide(this, id, ledger).then(state => {
+	decide(api, id, ledger).then(state => {
 		state.id = id;
 		state.time = time;
 		state.ledger = ledger;
-		this.emit("xmm", state);
-		this.once("ledger", tick);
+		api.emit("xmm", state);
+		api.once("ledger", tick);
 	}).catch(error => {
 		console.error(error);
-		this.once("ledger", tick);
+		api.once("ledger", tick);
 	});
 }
 
 module.exports = config => {
-	var api = new ripple.RippleAPI({
+	const api = new ripple.RippleAPI({
 		server: "wss://s1.ripple.com",
 	});
 
