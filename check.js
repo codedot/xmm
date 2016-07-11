@@ -11,19 +11,19 @@ module.exports = api => {
 	};
 	const psaldo = api.getBalances(id, opt).then(saldo => {
 		const dict = {};
-		var iou = 0;
+		var nassets = 0;
 
 		saldo.forEach(amount => {
 			const value = parseFloat(amount.value);
 
-			if (value > 0)
+			if (value > 0) {
 				dict[amount.currency] = value;
-			else
-				iou += -value;
+				++nassets;
+			}
 		});
 
 		state.saldo = dict;
-		state.iou = iou;
+		state.nassets = nassets;
 		raw.balances = saldo;
 	});
 	const pprices = psaldo.then(() => {
