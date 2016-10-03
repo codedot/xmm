@@ -3,9 +3,10 @@
 	"author": "Anton Salikhmetov",
 	"repository": "codedot/xmm#ng",
 	"name": "xmm",
-	"version": "0.0.3",
+	"bin": "./cli.js",
+	"version": "0.0.4",
 	"license": "UNLICENSED",
 	"dependencies": {
-		"ripple-lib": "*"
+		"ripple-lib": "0.17.3"
 	}
 }
