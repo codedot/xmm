@@ -1,6 +1,6 @@
 all:
 	npm install
-	npm start
+	./cli.js --help
 
 clean:
 	-rm -fr node_modules
