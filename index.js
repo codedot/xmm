@@ -2,7 +2,7 @@ const ripple = require("ripple-lib");
 
 module.exports = config => {
 	const api = new ripple.RippleAPI({
-		server: "wss://s1.ripple.com"
+		server: config.server
 	});
 
 	api.xmm = config;
