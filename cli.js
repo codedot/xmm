@@ -2,7 +2,7 @@
 
 const argv = require("yargs")
 	.usage("Usage: $0 command [options]")
-	.command("ledger", "Wait for a ledger to close")
+	.command(require("./ledger"))
 	.demand(1)
 	.strict()
 	.help()

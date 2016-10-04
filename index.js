@@ -7,10 +7,5 @@ module.exports = config => {
 
 	api.xmm = config;
 	api.connect();
-	api.once("ledger", ledger => {
-		console.log(ledger);
-		process.exit();
-	});
-
 	return api;
 };
