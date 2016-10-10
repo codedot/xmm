@@ -17,10 +17,18 @@ const opts = {
 
 const home = require("os").homedir();
 const conf = require("path").join(home, ".xmm.json");
+
+function load(path)
+{
+	const json = require("fs").readFileSync(path, "utf-8");
+
+	return JSON.parse(json);
+}
+
 const argv = require("yargs")
 	.usage("Usage: $0 [options] [command [arguments]]")
 	.options(opts)
-	.config()
+	.config("config", load)
 	.alias("config", "c")
 	.global("config")
 	.default("config", conf)
