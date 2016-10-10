@@ -1,16 +1,17 @@
 CLI = ./cli.js
 TEST = $(CLI) -c dummy.json
 
-all:
-	npm install
+all: install
 	$(CLI) --help
 	$(CLI) ledger
 
-test:
-	npm install
+test: install
 	node gen >dummy.json
 	cat dummy.json
 	$(TEST) ledger
+
+install:
+	npm install
 
 clean:
 	-rm -f dummy.json
