@@ -9,6 +9,7 @@ test: install
 	node gen >dummy.json
 	cat dummy.json
 	$(TEST) ledger
+	$(TEST) balance bank
 
 install:
 	npm install
