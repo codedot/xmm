@@ -6,7 +6,7 @@ exports.handler = config => {
 	const api = xmm(config);
 
 	api.once("ledger", ledger => {
-		console.log(ledger);
+		console.log(ledger.ledgerVersion);
 		process.exit();
 	});
 };

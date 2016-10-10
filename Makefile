@@ -6,9 +6,11 @@ all: install
 	$(CLI) ledger
 
 test: install
-	node gen >dummy.json
-	cat dummy.json
+	node gen >|dummy.json
 	$(TEST) ledger
+	$(TEST) ledger
+	$(TEST) ledger
+	$(TEST) balance fund
 	$(TEST) balance bank
 
 install:

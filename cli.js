@@ -26,7 +26,7 @@ function load(path)
 }
 
 const argv = require("yargs")
-	.usage("Usage: $0 [options] [command [arguments]]")
+	.usage("Usage: $0 [options] <command> [arguments]")
 	.options(opts)
 	.config("config", load)
 	.alias("config", "c")
@@ -34,10 +34,9 @@ const argv = require("yargs")
 	.default("config", conf)
 	.command(require("./ledger"))
 	.command(require("./balance"))
+	.demand(1)
 	.version()
 	.alias("version", "v")
 	.help()
 	.alias("help", "h")
 	.argv;
-
-console.log(argv);
