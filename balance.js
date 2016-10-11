@@ -14,6 +14,9 @@ exports.handler = config => {
 		}).then(balances => {
 			console.info(balances);
 			process.exit();
+		}).catch(reason => {
+			console.error(reason);
+			process.exit(1);
 		});
 	});
 };

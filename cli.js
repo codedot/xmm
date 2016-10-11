@@ -13,6 +13,12 @@ const opts = {
 		default: {},
 		global: true
 	},
+	timeout: {
+		alias: "t",
+		describe: "Timeout in seconds for requests",
+		default: 5,
+		global: true
+	},
 	server: {
 		alias: "s",
 		describe: "WebSocket server URL",
