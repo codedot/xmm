@@ -5,6 +5,8 @@ all:
 	./cli.js -c dummy.json ledger
 	./cli.js -c dummy.json ledger
 	./cli.js -c dummy.json ledger
+	./cli.js -c dummy.json ledger
+	./cli.js -c dummy.json ledger
 	./cli.js -c dummy.json balance fund
 	./cli.js -c dummy.json balance bank
 

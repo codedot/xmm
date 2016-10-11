@@ -7,8 +7,10 @@
 	"version": "0.0.6",
 	"license": "UNLICENSED",
 	"dependencies": {
-		"request": "2.75.0",
-		"yargs": "6.0.0",
-		"ripple-lib": "0.17.3"
+		"ripple-lib": "0.17.3",
+		"yargs": "6.0.0"
+	},
+	"devDependencies": {
+		"request": "2.75.0"
 	}
 }
