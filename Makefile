@@ -1,20 +1,12 @@
-CLI = ./cli.js
-TEST = $(CLI) -c dummy.json
-
-all: install
-	$(CLI) --help
-	$(CLI) ledger
-
-test: install
-	node gen >|dummy.json
-	$(TEST) ledger
-	$(TEST) ledger
-	$(TEST) ledger
-	$(TEST) balance fund
-	$(TEST) balance bank
-
-install:
+all:
 	npm install
+	node gen >|dummy.json
+	./cli.js -c dummy.json --help
+	./cli.js -c dummy.json ledger
+	./cli.js -c dummy.json ledger
+	./cli.js -c dummy.json ledger
+	./cli.js -c dummy.json balance fund
+	./cli.js -c dummy.json balance bank
 
 clean:
 	-rm -f dummy.json

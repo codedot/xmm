@@ -1,11 +1,13 @@
 const ripple = require("ripple-lib");
 
-module.exports = config => {
+exports.connect = config => new Promise(resolve => {
 	const api = new ripple.RippleAPI({
 		server: config.server
 	});
 
-	api.xmm = config;
 	api.connect();
-	return api;
-};
+	api.once("ledger", ledger => {
+		ledger = ledger.ledgerVersion;
+		resolve({ledger, api, config});
+	});
+});

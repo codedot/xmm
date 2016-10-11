@@ -2,19 +2,14 @@ exports.command = "balance <wallet> [ledger]";
 exports.desc = "Check balances in a wallet";
 exports.builder = yargs => yargs;
 exports.handler = config => {
-	const xmm = require(".");
-	const api = xmm(config);
-	const id = config.wallets[config.wallet].address;
+	require(".").connect(config).then(xmm => {
+		const id = config.wallets[config.wallet].address;
+		let ledger = config.ledger;
 
-	api.once("ledger", ledger => {
-		if (config.ledger)
-			ledger = config.ledger;
-		else
-			ledger = ledger.ledgerVersion;
+		if (!ledger)
+			ledger = xmm.ledger;
 
-		console.log(ledger, id);
-
-		api.getBalances(id, {
+		xmm.api.getBalances(id, {
 			ledgerVersion: ledger
 		}).then(balances => {
 			console.log(balances);
