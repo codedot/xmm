@@ -13,6 +13,12 @@ const opts = {
 		default: {},
 		global: true
 	},
+	cushion: {
+		alias: "f",
+		describe: "Factor to multiply estimated fee",
+		default: 1,
+		global: true
+	},
 	timeout: {
 		alias: "t",
 		describe: "Timeout in seconds for requests",
