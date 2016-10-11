@@ -1,6 +1,18 @@
 #!/usr/bin/env node
 
 const opts = {
+	wallets: {
+		coerse: JSON.parse,
+		describe: "Dictionary of wallets",
+		default: {},
+		global: true
+	},
+	assets: {
+		coerse: JSON.parse,
+		describe: "Dictionary of assets",
+		default: {},
+		global: true
+	},
 	server: {
 		alias: "s",
 		describe: "WebSocket server URL",
@@ -25,7 +37,7 @@ function load(path)
 	return JSON.parse(json);
 }
 
-const argv = require("yargs")
+require("yargs")
 	.usage("Usage: $0 [options] <command> [arguments]")
 	.options(opts)
 	.config("config", load)
@@ -35,6 +47,8 @@ const argv = require("yargs")
 	.command(require("./ledger"))
 	.command(require("./balance"))
 	.demand(1)
+	.strict()
+	.recommendCommands()
 	.version()
 	.alias("version", "v")
 	.help()
