@@ -32,9 +32,17 @@ const conf = require("path").join(home, ".xmm.json");
 
 function load(path)
 {
-	const json = require("fs").readFileSync(path, "utf-8");
+	try {
+		const read = require("fs").readFileSync;
+		const json = read(path, "utf-8");
+		const dict = JSON.parse(json);
 
-	return JSON.parse(json);
+		return dict;
+	} catch (error) {
+		console.warn("%s: Could not load configuration", path);
+
+		return {};
+	}
 }
 
 require("yargs")

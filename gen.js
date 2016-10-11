@@ -17,7 +17,7 @@ Promise.all([
 	new Promise(generate),
 	new Promise(generate)
 ]).then(wallets => {
-	console.log(JSON.stringify({
+	console.info(JSON.stringify({
 		wallets: {
 			fund: wallets[0],
 			bank: wallets[1]

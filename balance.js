@@ -12,7 +12,7 @@ exports.handler = config => {
 		xmm.api.getBalances(id, {
 			ledgerVersion: ledger
 		}).then(balances => {
-			console.log(balances);
+			console.info(balances);
 			process.exit();
 		});
 	});
