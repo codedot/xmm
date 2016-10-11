@@ -13,6 +13,12 @@ const opts = {
 		default: {},
 		global: true
 	},
+	count: {
+		alias: "n",
+		describe: "Number of ledgers to close",
+		default: 1,
+		global: true
+	},
 	cushion: {
 		alias: "f",
 		describe: "Factor to multiply estimated fee",

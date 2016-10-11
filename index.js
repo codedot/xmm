@@ -6,10 +6,19 @@ exports.connect = config => new Promise(resolve => {
 		timeout: config.timeout * 1e3,
 		server: config.server
 	});
+	let count = config.count > 0 ? config.count : 1;
 
+	function tick(ledger)
+	{
+		if (count > 0) {
+			--count;
+			api.once("ledger", tick);
+		} else {
+			ledger = ledger.ledgerVersion;
+			resolve({ledger, api, config});
+		}
+	}
+
+	tick();
 	api.connect();
-	api.once("ledger", ledger => {
-		ledger = ledger.ledgerVersion;
-		resolve({ledger, api, config});
-	});
 });

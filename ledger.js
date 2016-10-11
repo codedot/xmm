@@ -1,4 +1,4 @@
-exports.command = "ledger";
+exports.command = "ledger [count]";
 exports.desc = "Wait for a ledger to close";
 exports.builder = yargs => yargs;
 exports.handler = config => {
