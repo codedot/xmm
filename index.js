@@ -1,5 +1,7 @@
 const ripple = require("ripple-lib");
 
+const isabs = id => /^r[A-Za-z0-9]{25,}$/.test(id);
+
 exports.connect = config => new Promise(resolve => {
 	const api = new ripple.RippleAPI({
 		feeCushion: config.cushion,
