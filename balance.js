@@ -3,15 +3,10 @@ exports.desc = "Check balances in a wallet";
 exports.builder = yargs => yargs;
 exports.handler = config => {
 	require(".").connect(config).then(xmm => {
-		const id = config.wallets[config.wallet].address;
-		let ledger = config.ledger;
+		const wallet = config.wallet;
+		const ledger = config.ledger;
 
-		if (!ledger)
-			ledger = xmm.ledger;
-
-		xmm.api.getBalances(id, {
-			ledgerVersion: ledger
-		}).then(balances => {
+		xmm.balance(wallet, ledger).then(balances => {
 			console.info(balances);
 			process.exit();
 		}).catch(reason => {

@@ -9,6 +9,23 @@ class XMM {
 		this.wallets = opts.wallets;
 		this.assets = opts.assets;
 	}
+
+	balance(wallet, ledger) {
+		const id = this.wallets[wallet].address;
+
+		if (!ledger)
+			ledger = this.ledger;
+
+		return new Promise((resolve, reject) => {
+			this.api.getBalances(id, {
+				ledgerVersion: ledger
+			}).then(balances => {
+				resolve(balances);
+			}).catch(reason => {
+				reject(reason);
+			});
+		});
+	}
 }
 
 exports.connect = config => new Promise(resolve => {
