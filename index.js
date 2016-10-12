@@ -1,8 +1,16 @@
-const ripple = require("ripple-lib");
-
 const isabs = id => /^r[A-Za-z0-9]{25,}$/.test(id);
 
+class XMM {
+	constructor(opts) {
+		this.ledger = opts.ledger;
+		this.api = opts.api;
+		this.wallets = opts.wallets;
+		this.assets = opts.assets;
+	}
+}
+
 exports.connect = config => new Promise(resolve => {
+	const ripple = require("ripple-lib");
 	const api = new ripple.RippleAPI({
 		feeCushion: config.cushion,
 		timeout: config.timeout * 1e3,
@@ -16,8 +24,14 @@ exports.connect = config => new Promise(resolve => {
 			--count;
 			api.once("ledger", tick);
 		} else {
-			ledger = ledger.ledgerVersion;
-			resolve({ledger, api, config});
+			const xmm = new XMM({
+				ledger: ledger.ledgerVersion,
+				api: api,
+				wallets: config.wallets,
+				assets: config.assets
+			});
+
+			resolve(xmm);
 		}
 	}
 
