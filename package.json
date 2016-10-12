@@ -4,13 +4,11 @@
 	"repository": "codedot/xmm#ng",
 	"name": "xmm",
 	"bin": "./cli.js",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"license": "UNLICENSED",
 	"dependencies": {
 		"ripple-lib": "0.17.3",
-		"yargs": "6.0.0"
-	},
-	"devDependencies": {
+		"yargs": "6.0.0",
 		"request": "2.75.0"
 	}
 }

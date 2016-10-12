@@ -1,7 +1,7 @@
 all:
 	npm install
-	node gen >|dummy.json
-	./cli.js -c dummy.json --help
+	./cli.js -h
+	./cli.js generate >|dummy.json
 	./cli.js -c dummy.json ledger 5
 	./cli.js -c dummy.json balance fund
 	./cli.js -c dummy.json balance bank

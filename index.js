@@ -1,3 +1,5 @@
+const faucet = "https://faucet.altnet.rippletest.net/accounts";
+const testnet = "wss://s.altnet.rippletest.net:51233";
 const isabs = id => /^r[A-Za-z0-9]{25,}$/.test(id);
 
 class XMM {
@@ -37,4 +39,45 @@ exports.connect = config => new Promise(resolve => {
 
 	tick();
 	api.connect();
+});
+
+exports.generate = opts => new Promise(resolve => {
+	const request = require("request");
+
+	function create(resolve, reject)
+	{
+		request.post({
+			url: faucet,
+			json: true
+		}, (error, response, body) => {
+			resolve(body.account);
+		});
+	}
+
+	Promise.all([
+		new Promise(create),
+		new Promise(create)
+	]).then(wallets => {
+		resolve({
+			wallets: {
+				fund: wallets[0],
+				bank: wallets[1]
+			},
+			assets: {
+				xmm: {
+					code: "XMM",
+					issuer: "fund"
+				},
+				usd: {
+					code: "USD",
+					issuer: "bank"
+				},
+				btc: {
+					code: "BTC",
+					issuer: "bank"
+				}
+			},
+			server: testnet
+		});
+	});
 });
