@@ -1,5 +1,5 @@
 exports.command = "generate";
-exports.desc = "Generate a testnet configuration";
+exports.desc = "Generate testnet configuration";
 exports.builder = yargs => yargs;
 exports.handler = config => {
 	require(".").generate().then(dummy => {

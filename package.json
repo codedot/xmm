@@ -5,7 +5,7 @@
 	"name": "xmm",
 	"bin": "./cli.js",
 	"version": "0.0.7",
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"dependencies": {
 		"ripple-lib": "0.17.3",
 		"yargs": "6.0.0",
