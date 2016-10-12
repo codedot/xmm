@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
+const getobj = x => ("string" == typeof x) ? JSON.parse(x) : x;
 const opts = {
 	wallets: {
-		coerse: JSON.parse,
+		coerce: getobj,
 		describe: "Dictionary of wallets",
 		default: {},
 		global: true
 	},
 	assets: {
-		coerse: JSON.parse,
+		coerce: getobj,
 		describe: "Dictionary of assets",
 		default: {},
 		global: true
