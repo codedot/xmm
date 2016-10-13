@@ -19,10 +19,21 @@ class XMM {
 	}
 
 	toxmm(obj) {
+		const code = obj.currency;
+		const value = obj.value;
+
 		if (Array.isArray(obj))
 			return obj.map(line => this.toxmm(line));
 
-		return obj;
+		if (code && value) {
+			const issuer = obj.counterparty;
+			let asset = code;
+
+			if (issuer)
+				asset = code.concat(".", issuer);
+
+			return asset.concat(":", value);
+		}
 	}
 
 	balance(wallet, ledger) {
