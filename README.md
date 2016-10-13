@@ -15,16 +15,16 @@ Commands:
   generate                   Generate testnet configuration
 
 Options:
-  --wallets      Dictionary of wallets  [default: {}]
-  --assets       Dictionary of assets  [default: {}]
-  --count, -n    Number of ledgers to close  [default: 1]
-  --cushion, -f  Factor to multiply estimated fee  [default: 1]
-  --timeout, -t  Timeout in seconds for requests  [default: 5]
-  --server, -s   WebSocket server URL  [default: "wss://s1.ripple.com"]
-  --delta, -d    Stake to trade  [default: 0.01]
-  --config, -c   Path to JSON config file  [default: "/home/xmm/.xmm.json"]
-  --version, -v  Show version number  [boolean]
-  --help, -h     Show help  [boolean]
+  --wallets      Dictionary of wallets                   [default: {}]
+  --assets       Dictionary of assets                    [default: {}]
+  --count, -n    Number of ledgers to close               [default: 1]
+  --cushion, -f  Factor to multiply estimated fee         [default: 1]
+  --timeout, -t  Timeout in seconds for requests          [default: 5]
+  --server, -s   WebSocket server     [default: "wss://s1.ripple.com"]
+  --delta, -d    Stake to trade                        [default: 0.01]
+  --config, -c   Path to JSON config file       [default: ~/.xmm.json]
+  --version, -v  Show version number                         [boolean]
+  --help, -h     Show help                                   [boolean]
 ```
 
 # API

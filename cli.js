@@ -34,7 +34,7 @@ const opts = {
 	},
 	server: {
 		alias: "s",
-		describe: "WebSocket server URL",
+		describe: "WebSocket server",
 		default: "wss://s1.ripple.com",
 		global: true
 	},
@@ -70,7 +70,7 @@ require("yargs")
 	.config("config", load)
 	.alias("config", "c")
 	.global("config")
-	.default("config", conf)
+	.default("config", conf, "~/.xmm.json")
 	.command(require("./ledger"))
 	.command(require("./balance"))
 	.command(require("./generate"))
@@ -81,4 +81,5 @@ require("yargs")
 	.alias("version", "v")
 	.help()
 	.alias("help", "h")
+	.wrap(70)
 	.argv;
