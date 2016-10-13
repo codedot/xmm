@@ -1,6 +1,5 @@
 const faucet = "https://faucet.altnet.rippletest.net/accounts";
 const testnet = "wss://s.altnet.rippletest.net:51233";
-const isabs = id => /^r[A-Za-z0-9]{25,}$/.test(id);
 
 class XMM {
 	constructor(opts) {
@@ -10,8 +9,17 @@ class XMM {
 		this.assets = opts.assets;
 	}
 
+	toabs(wallet) {
+		if (/^r[A-Za-z0-9]{25,}$/.test(wallet))
+			return wallet;
+
+		wallet = this.wallets[wallet];
+		if (wallet)
+			return wallet.address;
+	}
+
 	balance(wallet, ledger) {
-		const id = this.wallets[wallet].address;
+		const id = this.toabs(wallet);
 
 		if (!ledger)
 			ledger = this.ledger;
