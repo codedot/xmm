@@ -18,6 +18,13 @@ class XMM {
 			return wallet.address;
 	}
 
+	toxmm(obj) {
+		if (Array.isArray(obj))
+			return obj.map(line => this.toxmm(line));
+
+		return obj;
+	}
+
 	balance(wallet, ledger) {
 		const id = this.toabs(wallet);
 
@@ -28,6 +35,7 @@ class XMM {
 			this.api.getBalances(id, {
 				ledgerVersion: ledger
 			}).then(balances => {
+				balances = this.toxmm(balances);
 				resolve(balances);
 			}).catch(reason => {
 				reject(reason);
