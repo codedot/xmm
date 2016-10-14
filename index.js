@@ -7,6 +7,29 @@ class XMM {
 		this.api = opts.api;
 		this.wallets = opts.wallets;
 		this.assets = opts.assets;
+		this.dict = this.reverse();
+	}
+
+	reverse() {
+		const dict = {};
+		const wallets = this.wallets;
+		const assets = this.assets;
+
+		for (let alias in wallets)
+			dict[wallets[alias].address] = alias;
+
+		for (let alias in assets) {
+			const asset = assets[alias];
+			const issuer = this.toabs(asset.issuer);
+			let key = asset.code;
+
+			if (issuer)
+				key = key.concat(".", issuer);
+
+			dict[key] = alias;
+		}
+
+		return dict;
 	}
 
 	toabs(wallet) {
