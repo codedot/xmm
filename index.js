@@ -7,11 +7,12 @@ class XMM {
 		this.api = opts.api;
 		this.wallets = opts.wallets;
 		this.assets = opts.assets;
-		this.dict = this.reverse();
+		this.dict = {};
+		this.reverse();
 	}
 
 	reverse() {
-		const dict = {};
+		const dict = this.dict;
 		const wallets = this.wallets;
 		const assets = this.assets;
 
@@ -20,11 +21,13 @@ class XMM {
 
 		for (let alias in assets) {
 			const asset = assets[alias];
-			const issuer = this.toabs(asset.issuer);
+			let issuer = asset.issuer;
 			let key = asset.code;
 
-			if (issuer)
+			if (issuer) {
+				issuer = this.shorten(issuer);
 				key = key.concat(".", issuer);
+			}
 
 			dict[key] = alias;
 		}
@@ -58,11 +61,13 @@ class XMM {
 			return obj.map(line => this.toxmm(line));
 
 		if (code && value) {
-			const issuer = obj.counterparty;
+			let issuer = obj.counterparty;
 			let asset = code;
 
-			if (issuer)
+			if (issuer) {
+				issuer = this.shorten(issuer);
 				asset = code.concat(".", issuer);
+			}
 
 			asset = this.shorten(asset);
 			return asset.concat(":", value);
