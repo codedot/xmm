@@ -32,6 +32,15 @@ class XMM {
 		return dict;
 	}
 
+	shorten(line) {
+		const alias = this.dict[line];
+
+		if (alias)
+			return alias;
+
+		return line;
+	}
+
 	toabs(wallet) {
 		if (/^r[A-Za-z0-9]{25,}$/.test(wallet))
 			return wallet;
@@ -55,6 +64,7 @@ class XMM {
 			if (issuer)
 				asset = code.concat(".", issuer);
 
+			asset = this.shorten(asset);
 			return asset.concat(":", value);
 		}
 	}
@@ -71,9 +81,7 @@ class XMM {
 			}).then(balances => {
 				balances = this.toxmm(balances);
 				resolve(balances);
-			}).catch(reason => {
-				reject(reason);
-			});
+			}).catch(reject);
 		});
 	}
 }

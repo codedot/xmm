@@ -4,7 +4,7 @@
 	"repository": "codedot/xmm#ng",
 	"name": "xmm",
 	"bin": "./cli.js",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"license": "MIT",
 	"dependencies": {
 		"ripple-lib": "0.17.3",
