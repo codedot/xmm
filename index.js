@@ -72,6 +72,36 @@ class XMM {
 	}
 
 	tobal(list, me) {
+		const iou = {};
+
+		list = list.filter(line => {
+			const value = parseFloat(line.value);
+
+			if (value > 0)
+				return true;
+
+			if (value < 0) {
+				const code = line.currency;
+
+				if (!iou[code])
+					iou[code] = 0;
+
+				iou[code] += value;
+			}
+
+			return false;
+		});
+
+		for (let code in iou) {
+			const value = iou[code].toFixed(8);
+
+			list.push({
+				currency: code,
+				counterparty: me,
+				value: value
+			});
+		}
+
 		return list.map(line => this.toxmm(line));
 	}
 
