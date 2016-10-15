@@ -57,9 +57,6 @@ class XMM {
 		const code = obj.currency;
 		const value = obj.value;
 
-		if (Array.isArray(obj))
-			return obj.map(line => this.toxmm(line));
-
 		if (code && value) {
 			let issuer = obj.counterparty;
 			let asset = code;
@@ -74,6 +71,10 @@ class XMM {
 		}
 	}
 
+	tobal(list, me) {
+		return list.map(line => this.toxmm(line));
+	}
+
 	balance(wallet, ledger) {
 		const id = this.toabs(wallet);
 
@@ -83,9 +84,8 @@ class XMM {
 		return new Promise((resolve, reject) => {
 			this.api.getBalances(id, {
 				ledgerVersion: ledger
-			}).then(balances => {
-				balances = this.toxmm(balances);
-				resolve(balances);
+			}).then(list => {
+				resolve(this.tobal(list, id));
 			}).catch(reject);
 		});
 	}
