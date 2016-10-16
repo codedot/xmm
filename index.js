@@ -152,6 +152,9 @@ class XMM {
 			}).catch(reject);
 		});
 	}
+
+	parse(str) {
+	}
 }
 
 exports.connect = config => new Promise(resolve => {
