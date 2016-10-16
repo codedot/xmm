@@ -182,7 +182,6 @@ class XMM {
 	parse(str) {
 		const tokens = syntax.exec(str);
 		let asset, value, wallet, type;
-		const obj = {};
 
 		if (!tokens)
 			return;
@@ -202,15 +201,25 @@ class XMM {
 
 		switch (type) {
 		case "value":
-			obj.value = parseFloat(value);
+			value = parseFloat(value);
+			if (!isFinite(value))
+				return;
 		case "asset":
-			obj.asset = this.toasset(asset);
+			asset = this.toasset(asset);
+			if (!asset)
+				return;
 		case "wallet":
-			obj.wallet = this.toabs(wallet);
+			wallet = this.toabs(wallet);
+			if (!wallet)
+				return;
 		}
 
-		obj.type = type;
-		return obj;
+		return {
+			type: type,
+			value: value,
+			asset: asset,
+			wallet: wallet
+		};
 	}
 }
 
