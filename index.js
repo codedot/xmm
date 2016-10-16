@@ -1,5 +1,6 @@
 const faucet = "https://faucet.altnet.rippletest.net/accounts";
 const testnet = "wss://s.altnet.rippletest.net:51233";
+const root = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
 
 class XMM {
 	constructor(opts) {
@@ -8,7 +9,41 @@ class XMM {
 		this.wallets = opts.wallets;
 		this.assets = opts.assets;
 		this.dict = {};
+		this.expand();
 		this.reverse();
+	}
+
+	expand() {
+		const wallets = this.wallets;
+		const assets = this.assets;
+
+		for (let alias in wallets) {
+			const entry = wallets[alias];
+
+			if ("string" == typeof entry) {
+				const obj = {
+					address: entry
+				};
+
+				wallets[alias] = obj;
+			}
+		}
+
+		for (let alias in assets) {
+			const entry = assets[alias];
+
+			if ("string" == typeof entry) {
+				const pair = entry.split(".");
+				const code = pair.shift();
+				const issuer = pair.shift();
+				const obj = {
+					code: code,
+					issuer: issuer
+				};
+
+				assets[alias] = obj;
+			}
+		}
 	}
 
 	reverse() {
@@ -31,8 +66,6 @@ class XMM {
 
 			dict[key] = alias;
 		}
-
-		return dict;
 	}
 
 	shorten(line) {
@@ -171,21 +204,13 @@ exports.generate = opts => new Promise(resolve => {
 		resolve({
 			wallets: {
 				fund: wallets[0],
-				bank: wallets[1]
+				bank: wallets[1],
+				root: root
 			},
 			assets: {
-				xmm: {
-					code: "XMM",
-					issuer: "fund"
-				},
-				usd: {
-					code: "USD",
-					issuer: "bank"
-				},
-				btc: {
-					code: "BTC",
-					issuer: "bank"
-				}
+				XMM: "XMM.fund",
+				USD: "USD.bank",
+				BTC: "BTC.bank"
 			},
 			server: testnet
 		});
