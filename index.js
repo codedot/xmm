@@ -165,16 +165,29 @@ class XMM {
 	}
 
 	balance(wallet, ledger) {
-		const id = this.toabs(wallet);
+		const obj = this.parse(wallet);
+		let reason;
+
+		if (!obj || "wallet" != obj.type)
+			reason = `"${wallet}" is not a wallet`;
 
 		if (!ledger)
 			ledger = this.ledger;
 
 		return new Promise((resolve, reject) => {
-			this.api.getBalances(id, {
+			let me;
+
+			if (reason) {
+				reject(reason);
+				return;
+			}
+
+			me = obj.wallet;
+
+			this.api.getBalances(me, {
 				ledgerVersion: ledger
 			}).then(list => {
-				resolve(this.tobal(list, id));
+				resolve(this.tobal(list, me));
 			}).catch(reject);
 		});
 	}
