@@ -1,6 +1,7 @@
 const faucet = "https://faucet.altnet.rippletest.net/accounts";
 const testnet = "wss://s.altnet.rippletest.net:51233";
 const root = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
+const syntax = /^(|([^:@]+)(|:([^:@]+))@)([^@]+)$/;
 
 class XMM {
 	constructor(opts) {
@@ -11,6 +12,25 @@ class XMM {
 		this.dict = {};
 		this.expand();
 		this.reverse();
+	}
+
+	toasset(str) {
+		const pair = str.split(".");
+		const asset = pair.shift();
+		const issuer = pair.shift();
+		const obj = {
+			code: asset
+		};
+
+		if (issuer) {
+			obj.issuer = this.toabs(issuer);
+			return obj;
+		}
+
+		if ("XRP" == asset)
+			return obj;
+
+		return this.assets[asset];
 	}
 
 	expand() {
@@ -43,6 +63,12 @@ class XMM {
 
 				assets[alias] = obj;
 			}
+		}
+
+		for (let alias in assets) {
+			const entry = assets[alias];
+
+			entry.issuer = this.toabs(entry.issuer);
 		}
 	}
 
@@ -154,6 +180,37 @@ class XMM {
 	}
 
 	parse(str) {
+		const tokens = syntax.exec(str);
+		let asset, value, wallet, type;
+		const obj = {};
+
+		if (!tokens)
+			return;
+
+		asset = tokens[2];
+		value = tokens[4];
+		wallet = tokens[5];
+
+		if (value)
+			type = "value";
+		else if (asset)
+			type = "asset";
+		else if (wallet)
+			type = "wallet";
+		else
+			return;
+
+		switch (type) {
+		case "value":
+			obj.value = parseFloat(value);
+		case "asset":
+			obj.asset = this.toasset(asset);
+		case "wallet":
+			obj.wallet = this.toabs(wallet);
+		}
+
+		obj.type = type;
+		return obj;
 	}
 }
 
