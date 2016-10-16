@@ -13,6 +13,7 @@ Commands:
   ledger [count]             Wait for ledger(s) to close
   balance <wallet> [ledger]  Check balances in a wallet
   generate                   Generate testnet configuration
+  what <string>              Tell what a string means
 
 Options:
   --wallets      Dictionary of wallets                   [default: {}]
