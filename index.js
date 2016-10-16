@@ -126,7 +126,7 @@ class XMM {
 		});
 
 		for (let code in iou) {
-			const value = iou[code].toFixed(8);
+			const value = iou[code].toString();
 
 			list.push({
 				currency: code,
