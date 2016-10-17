@@ -6,8 +6,9 @@ exports.handler = config => {
 		const wallet = config.wallet;
 		const ledger = config.ledger;
 
-		xmm.balance(wallet, ledger).then(balances => {
-			console.info(balances.join("\n"));
+		xmm.balance(wallet, ledger).then(lines => {
+			lines = lines.map(line => line.human);
+			console.info(lines.join("\n"));
 			process.exit();
 		}).catch(global.abort);
 	}).catch(global.abort);

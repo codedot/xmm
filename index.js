@@ -5,7 +5,10 @@ const syntax = /^(|([^:@]+)(|:([^:@]+))@)([^@]+)$/;
 
 class XMMarg {
 	constructor(xmm, obj) {
-		this.xmm = xmm;
+		this.shorten = xmm.shorten.bind(xmm);
+		this.toabs = xmm.toabs.bind(xmm);
+		this.assets = xmm.assets;
+
 		this.input = JSON.stringify(obj);
 		this.type = "undefined";
 
@@ -19,66 +22,6 @@ class XMMarg {
 		this.value = obj.value;
 		this.asset = obj.asset;
 		this.wallet = obj.wallet;
-	}
-
-	parse(str) {
-		const tokens = syntax.exec(str);
-		let asset, value, wallet, type;
-
-		if (!tokens)
-			return;
-
-		asset = tokens[2];
-		value = tokens[4];
-		wallet = tokens[5];
-
-		if (value)
-			type = "value";
-		else if (asset)
-			type = "asset";
-		else if (wallet)
-			type = "wallet";
-		else
-			return;
-
-		switch (type) {
-		case "value":
-			value = parseFloat(value);
-			if (!isFinite(value))
-				return;
-		case "asset":
-			asset = this.xmm.toasset(asset);
-			if (!asset)
-				return;
-		case "wallet":
-			wallet = this.xmm.toabs(wallet);
-			if (!wallet)
-				return;
-		}
-
-		return {
-			type: type,
-			value: value,
-			asset: asset,
-			wallet: wallet
-		};
-	}
-
-	expect(type) {
-		if (type != this.type)
-			return `${this.input} is not ${type}`;
-	}
-}
-
-class XMM {
-	constructor(opts) {
-		this.ledger = opts.ledger;
-		this.api = opts.api;
-		this.wallets = opts.wallets;
-		this.assets = opts.assets;
-		this.dict = {};
-		this.expand();
-		this.reverse();
 	}
 
 	toasset(str) {
@@ -111,6 +54,92 @@ class XMM {
 		}
 
 		return this.assets[asset];
+	}
+
+	get human() {
+		let value, asset, issuer, wallet;
+		let str = "";
+
+		switch (this.type) {
+		case "value":
+			value = this.value.toString();
+			str = ":" + value;
+		case "asset":
+			asset = this.asset;
+			issuer = asset.issuer;
+			asset = asset.code;
+			if (issuer) {
+				issuer = this.shorten(issuer);
+				asset = asset + "." + issuer;
+				asset = this.shorten(asset);
+			}
+			str = asset + str + "@";
+		case "wallet":
+			wallet = this.wallet;
+			wallet = this.shorten(wallet);
+			str = str + wallet;
+			return str;
+		}
+	}
+
+	parse(str) {
+		const tokens = syntax.exec(str);
+		let asset, value, wallet, type;
+
+		if (!tokens)
+			return;
+
+		asset = tokens[2];
+		value = tokens[4];
+		wallet = tokens[5];
+
+		if (value)
+			type = "value";
+		else if (asset)
+			type = "asset";
+		else if (wallet)
+			type = "wallet";
+		else
+			return;
+
+		switch (type) {
+		case "value":
+			value = parseFloat(value);
+			if (!isFinite(value))
+				return;
+		case "asset":
+			asset = this.toasset(asset);
+			if (!asset)
+				return;
+		case "wallet":
+			wallet = this.toabs(wallet);
+			if (!wallet)
+				return;
+		}
+
+		return {
+			type: type,
+			value: value,
+			asset: asset,
+			wallet: wallet
+		};
+	}
+
+	expect(type) {
+		if (type != this.type)
+			return `${this.input} is not ${type}`;
+	}
+}
+
+class XMM {
+	constructor(opts) {
+		this.ledger = opts.ledger;
+		this.api = opts.api;
+		this.wallets = opts.wallets;
+		this.assets = opts.assets;
+		this.dict = {};
+		this.expand();
+		this.reverse();
 	}
 
 	expand() {
@@ -192,24 +221,6 @@ class XMM {
 			return wallet.address;
 	}
 
-	toxmm(obj) {
-		const code = obj.currency;
-		const value = obj.value;
-
-		if (code && value) {
-			let issuer = obj.counterparty;
-			let asset = code;
-
-			if (issuer) {
-				issuer = this.shorten(issuer);
-				asset = code.concat(".", issuer);
-			}
-
-			asset = this.shorten(asset);
-			return asset.concat(":", value);
-		}
-	}
-
 	tobal(list, me) {
 		const iou = {};
 
@@ -241,7 +252,15 @@ class XMM {
 			});
 		}
 
-		return list.map(line => this.toxmm(line));
+		return list.map(line => new XMMarg(this, {
+			type: "value",
+			value: parseFloat(line.value),
+			asset: {
+				code: line.currency,
+				issuer: line.counterparty
+			},
+			wallet: me
+		}));
 	}
 
 	balance(wallet, ledger) {
@@ -269,8 +288,8 @@ class XMM {
 		});
 	}
 
-	parse(str) {
-		return new XMMarg(this, str);
+	parse(arg) {
+		return new XMMarg(this, arg);
 	}
 }
 
