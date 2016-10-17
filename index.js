@@ -3,6 +3,57 @@ const testnet = "wss://s.altnet.rippletest.net:51233";
 const root = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
 const syntax = /^(|([^:@]+)(|:([^:@]+))@)([^@]+)$/;
 
+class XMMarg {
+	constructor(xmm, str) {
+		const tokens = syntax.exec(str);
+		let asset, value, wallet, type;
+
+		this.input = str;
+		this.type = "undefined";
+
+		if (!tokens)
+			return;
+
+		asset = tokens[2];
+		value = tokens[4];
+		wallet = tokens[5];
+
+		if (value)
+			type = "value";
+		else if (asset)
+			type = "asset";
+		else if (wallet)
+			type = "wallet";
+		else
+			return;
+
+		switch (type) {
+		case "value":
+			value = parseFloat(value);
+			if (!isFinite(value))
+				return;
+		case "asset":
+			asset = xmm.toasset(asset);
+			if (!asset)
+				return;
+		case "wallet":
+			wallet = xmm.toabs(wallet);
+			if (!wallet)
+				return;
+		}
+
+		this.type = type;
+		this.value = value;
+		this.asset = asset;
+		this.wallet = wallet;
+	}
+
+	expect(type) {
+		if (type != this.type)
+			return `"${this.input}" is not ${type}`;
+	}
+}
+
 class XMM {
 	constructor(opts) {
 		this.ledger = opts.ledger;
@@ -165,11 +216,8 @@ class XMM {
 	}
 
 	balance(wallet, ledger) {
-		const obj = this.parse(wallet);
-		let reason;
-
-		if (!obj || "wallet" != obj.type)
-			reason = `"${wallet}" is not a wallet`;
+		const arg = this.parse(wallet);
+		const reason = arg.expect("wallet");
 
 		if (!ledger)
 			ledger = this.ledger;
@@ -182,7 +230,7 @@ class XMM {
 				return;
 			}
 
-			me = obj.wallet;
+			me = arg.wallet;
 
 			this.api.getBalances(me, {
 				ledgerVersion: ledger
@@ -193,46 +241,7 @@ class XMM {
 	}
 
 	parse(str) {
-		const tokens = syntax.exec(str);
-		let asset, value, wallet, type;
-
-		if (!tokens)
-			return;
-
-		asset = tokens[2];
-		value = tokens[4];
-		wallet = tokens[5];
-
-		if (value)
-			type = "value";
-		else if (asset)
-			type = "asset";
-		else if (wallet)
-			type = "wallet";
-		else
-			return;
-
-		switch (type) {
-		case "value":
-			value = parseFloat(value);
-			if (!isFinite(value))
-				return;
-		case "asset":
-			asset = this.toasset(asset);
-			if (!asset)
-				return;
-		case "wallet":
-			wallet = this.toabs(wallet);
-			if (!wallet)
-				return;
-		}
-
-		return {
-			type: type,
-			value: value,
-			asset: asset,
-			wallet: wallet
-		};
+		return new XMMarg(this, str);
 	}
 }
 
