@@ -14,6 +14,9 @@ all:
 	$(TEST) what XRP:1e-6@root
 	$(TEST) balance fund
 	$(TEST) balance bank
+	$(TEST) send XRP:123.456@bank XRP:123.456@fund
+	$(TEST) balance fund
+	$(TEST) balance bank
 
 clean:
 	-rm -f $(CONF)

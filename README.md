@@ -14,6 +14,7 @@ Commands:
   balance <wallet> [ledger]  Check balances in a wallet
   generate                   Generate testnet configuration
   what <string>              Tell what a string means
+  send <src> <dst>           Pay or convert a value
 
 Options:
   --wallets      Dictionary of wallets                   [default: {}]

@@ -24,6 +24,24 @@ class XMMarg {
 		this.wallet = obj.wallet;
 	}
 
+	get amount() {
+		const obj = {};
+		const asset = this.asset;
+		let issuer;
+
+		if ("value" != this.type)
+			return;
+
+		obj.value = this.value.toString();
+		obj.currency = asset.code;
+
+		issuer = asset.issuer;
+		if (issuer)
+			obj.counterparty = issuer;
+
+		return obj;
+	}
+
 	toasset(str) {
 		const obj = {};
 		let asset, issuer;
@@ -290,6 +308,39 @@ class XMM {
 
 	parse(arg) {
 		return new XMMarg(this, arg);
+	}
+
+	send(src, dst) {
+		return new Promise((resolve, reject) => {
+			let reason, me;
+
+			src = this.parse(src);
+			reason = src.expect("value");
+			if (reason) {
+				reject(reason);
+				return;
+			}
+
+			dst = this.parse(dst);
+			reason = dst.expect("value");
+			if (reason) {
+				reject(reason);
+				return;
+			}
+
+			me = src.wallet;
+
+			resolve(this.api.preparePayment(me, {
+				source: {
+					address: me,
+					maxAmount: src.amount
+				},
+				destination: {
+					address: dst.wallet,
+					amount: dst.amount
+				}
+			}));
+		});
 	}
 }
 
