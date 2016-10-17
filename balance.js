@@ -10,6 +10,6 @@ exports.handler = config => {
 			lines = lines.map(line => line.human);
 			console.info(lines.join("\n"));
 			process.exit();
-		}).catch(global.abort);
-	}).catch(global.abort);
+		}).catch(abort);
+	}).catch(abort);
 };

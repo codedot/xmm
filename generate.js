@@ -5,5 +5,5 @@ exports.handler = config => {
 	require(".").generate().then(dummy => {
 		console.info(JSON.stringify(dummy, null, "\t"));
 		process.exit();
-	}).catch(global.abort);
+	}).catch(abort);
 };

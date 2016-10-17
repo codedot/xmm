@@ -5,5 +5,5 @@ exports.handler = config => {
 	require(".").connect(config).then(xmm => {
 		console.info(xmm.ledger);
 		process.exit();
-	}).catch(global.abort);
+	}).catch(abort);
 };

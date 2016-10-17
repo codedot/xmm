@@ -30,5 +30,5 @@ exports.handler = config => {
 
 		console.info(msg.join(" "));
 		process.exit();
-	}).catch(global.abort);
+	}).catch(abort);
 };

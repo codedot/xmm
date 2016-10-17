@@ -10,6 +10,6 @@ exports.handler = config => {
 			tx = JSON.parse(tx.txJSON);
 			console.info(tx);
 			process.exit();
-		}).catch(global.abort);
-	}).catch(global.abort);
+		}).catch(abort);
+	}).catch(abort);
 };
