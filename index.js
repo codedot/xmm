@@ -82,20 +82,33 @@ class XMM {
 	}
 
 	toasset(str) {
-		const pair = str.split(".");
-		const asset = pair.shift();
-		const issuer = pair.shift();
-		const obj = {
-			code: asset
-		};
+		const obj = {};
+		let asset, issuer;
 
-		if (issuer) {
-			obj.issuer = this.toabs(issuer);
+		if ("string" != typeof str)
+			return;
+
+		str = str.split(".");
+		asset = str.shift();
+		issuer = str.shift();
+
+		if ("XRP" == asset) {
+			if (issuer)
+				return;
+
+			obj.code = asset;
 			return obj;
 		}
 
-		if ("XRP" == asset)
+		if (issuer) {
+			issuer = this.toabs(issuer);
+			if (!issuer)
+				return;
+
+			obj.code = asset;
+			obj.issuer = issuer;
 			return obj;
+		}
 
 		return this.assets[asset];
 	}
