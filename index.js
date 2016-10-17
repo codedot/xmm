@@ -291,7 +291,7 @@ exports.connect = config => new Promise(resolve => {
 	api.connect();
 });
 
-exports.generate = opts => new Promise(resolve => {
+exports.generate = opts => new Promise((resolve, reject) => {
 	const request = require("request");
 
 	function create(resolve, reject)
@@ -321,5 +321,5 @@ exports.generate = opts => new Promise(resolve => {
 			},
 			server: testnet
 		});
-	});
+	}).catch(reject);
 });

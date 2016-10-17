@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+global.abort = reason => {
+	console.error(reason);
+	process.exit(1);
+};
+
 const getobj = x => ("string" == typeof x) ? JSON.parse(x) : x;
 const opts = {
 	wallets: {

@@ -9,9 +9,6 @@ exports.handler = config => {
 		xmm.balance(wallet, ledger).then(balances => {
 			console.info(balances.join("\n"));
 			process.exit();
-		}).catch(reason => {
-			console.error(reason);
-			process.exit(1);
-		});
-	});
+		}).catch(global.abort);
+	}).catch(global.abort);
 };
