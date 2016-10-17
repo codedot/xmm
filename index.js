@@ -4,12 +4,26 @@ const root = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
 const syntax = /^(|([^:@]+)(|:([^:@]+))@)([^@]+)$/;
 
 class XMMarg {
-	constructor(xmm, str) {
+	constructor(xmm, obj) {
+		this.xmm = xmm;
+		this.input = JSON.stringify(obj);
+		this.type = "undefined";
+
+		if ("string" == typeof obj)
+			obj = this.parse(obj);
+
+		if (!obj)
+			return;
+
+		this.type = obj.type;
+		this.value = obj.value;
+		this.asset = obj.asset;
+		this.wallet = obj.wallet;
+	}
+
+	parse(str) {
 		const tokens = syntax.exec(str);
 		let asset, value, wallet, type;
-
-		this.input = str;
-		this.type = "undefined";
 
 		if (!tokens)
 			return;
@@ -33,24 +47,26 @@ class XMMarg {
 			if (!isFinite(value))
 				return;
 		case "asset":
-			asset = xmm.toasset(asset);
+			asset = this.xmm.toasset(asset);
 			if (!asset)
 				return;
 		case "wallet":
-			wallet = xmm.toabs(wallet);
+			wallet = this.xmm.toabs(wallet);
 			if (!wallet)
 				return;
 		}
 
-		this.type = type;
-		this.value = value;
-		this.asset = asset;
-		this.wallet = wallet;
+		return {
+			type: type,
+			value: value,
+			asset: asset,
+			wallet: wallet
+		};
 	}
 
 	expect(type) {
 		if (type != this.type)
-			return `"${this.input}" is not ${type}`;
+			return `${this.input} is not ${type}`;
 	}
 }
 
