@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 
-global.abort = reason => {
-	console.error(reason);
+global.abort = (msg, error) => {
+	if (error)
+		console.error(error);
+	else
+		console.error(msg);
+
 	process.exit(1);
 };
 
@@ -89,4 +93,5 @@ require("yargs")
 	.help()
 	.alias("help", "h")
 	.wrap(70)
+	.fail(abort)
 	.argv;
