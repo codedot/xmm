@@ -4,7 +4,7 @@
 	"repository": "codedot/xmm#ng",
 	"name": "xmm",
 	"bin": "./cli.js",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"license": "MIT",
 	"dependencies": {
 		"ajv": "4.0.5",

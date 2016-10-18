@@ -3,15 +3,12 @@ TEST = ./cli.js -c $(CONF)
 
 all:
 	npm install
-	./cli.js -h
-	./cli.js generate >|$(CONF)
-	$(TEST) balance root
-	$(TEST) what fund
-	$(TEST) what XMM@bank
-	$(TEST) what USD:123.45@root
-	$(TEST) what USD.bank:123.45@fund
-	$(TEST) what XMM.fund@bank
-	$(TEST) what XRP:1e-6@root
+	$(TEST) -h
+	$(TEST) generate >|$(CONF)
+	$(TEST) balance rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh
+	$(TEST) what XMM@fund
+	$(TEST) what XRP:1e-6@bank
+	$(TEST) what EUR.bank:.42@root
 	$(TEST) balance fund
 	$(TEST) balance bank
 	$(TEST) send XRP:123.456@bank XRP:123.456@fund
