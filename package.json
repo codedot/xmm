@@ -3,7 +3,7 @@
 	"author": "Anton Salikhmetov",
 	"repository": "codedot/xmm#ng",
 	"name": "xmm",
-	"bin": "./cli.js",
+	"bin": "./xmm.js",
 	"version": "0.1.3",
 	"license": "MIT",
 	"dependencies": {

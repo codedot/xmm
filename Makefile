@@ -1,5 +1,5 @@
 CONF = dummy.json
-TEST = ./cli.js -c $(CONF)
+TEST = node xmm -c $(CONF)
 
 all:
 	npm install
