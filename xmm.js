@@ -11,22 +11,10 @@ global.abort = (msg, error) => {
 
 const getobj = x => ("string" == typeof x) ? JSON.parse(x) : x;
 const opts = {
-	wallets: {
-		coerce: getobj,
-		describe: "Dictionary of wallets",
-		default: {},
-		global: true
-	},
 	assets: {
 		coerce: getobj,
 		describe: "Dictionary of assets",
 		default: {},
-		global: true
-	},
-	ledger: {
-		alias: "l",
-		describe: "Historical ledger version",
-		number: true,
 		global: true
 	},
 	count: {
@@ -41,10 +29,16 @@ const opts = {
 		default: 1,
 		global: true
 	},
-	timeout: {
-		alias: "t",
-		describe: "Timeout in seconds for requests",
-		default: 5,
+	delta: {
+		alias: "d",
+		describe: "Stake to trade",
+		default: 0.01,
+		global: true
+	},
+	ledger: {
+		alias: "l",
+		describe: "Historical ledger version",
+		number: true,
 		global: true
 	},
 	server: {
@@ -53,10 +47,16 @@ const opts = {
 		default: "wss://s1.ripple.com",
 		global: true
 	},
-	delta: {
-		alias: "d",
-		describe: "Stake to trade",
-		default: 0.01,
+	timeout: {
+		alias: "t",
+		describe: "Timeout in seconds for requests",
+		default: 5,
+		global: true
+	},
+	wallets: {
+		coerce: getobj,
+		describe: "Dictionary of wallets",
+		default: {},
 		global: true
 	}
 };
@@ -86,11 +86,11 @@ require("yargs")
 	.alias("config", "c")
 	.global("config")
 	.default("config", conf, "~/.xmm.json")
-	.command(require("./ledger"))
 	.command(require("./balance"))
 	.command(require("./generate"))
-	.command(require("./what"))
+	.command(require("./ledger"))
 	.command(require("./send"))
+	.command(require("./what"))
 	.demand(1)
 	.strict()
 	.recommendCommands()
