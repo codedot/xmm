@@ -23,6 +23,12 @@ const opts = {
 		default: {},
 		global: true
 	},
+	ledger: {
+		alias: "l",
+		describe: "Historical ledger version",
+		number: true,
+		global: true
+	},
 	count: {
 		alias: "n",
 		describe: "Number of ledgers to close",

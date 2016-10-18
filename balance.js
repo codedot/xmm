@@ -1,4 +1,4 @@
-exports.command = "balance <wallet> [ledger]";
+exports.command = "balance <wallet>";
 exports.desc = "Check balances in a wallet";
 exports.builder = yargs => yargs;
 exports.handler = config => {

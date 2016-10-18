@@ -10,15 +10,16 @@ This package provides an `xmm` command with the following interface:
 Usage: xmm [options] <command> [arguments]
 
 Commands:
-  ledger [count]             Wait for ledger(s) to close
-  balance <wallet> [ledger]  Check balances in a wallet
-  generate                   Generate testnet configuration
-  what <string>              Tell what a string means
-  send <src> <dst>           Pay or convert a value
+  ledger [count]    Wait for ledger(s) to close
+  balance <wallet>  Check balances in a wallet
+  generate          Generate testnet configuration
+  what <string>     Tell what a string means
+  send <src> <dst>  Pay or convert a value
 
 Options:
   --wallets      Dictionary of wallets                   [default: {}]
   --assets       Dictionary of assets                    [default: {}]
+  --ledger, -l   Historical ledger version                    [number]
   --count, -n    Number of ledgers to close               [default: 1]
   --cushion, -f  Factor to multiply estimated fee         [default: 1]
   --timeout, -t  Timeout in seconds for requests          [default: 5]
@@ -27,6 +28,7 @@ Options:
   --config, -c   Path to JSON config file       [default: ~/.xmm.json]
   --version, -v  Show version number                         [boolean]
   --help, -h     Show help                                   [boolean]
+
 ```
 
 # API
