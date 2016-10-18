@@ -10,7 +10,8 @@ exports.handler = config => {
 		const dst = config.dst;
 
 		xmm.send(src, dst).then(tx => {
-			console.info(tx);
+			console.info(tx.hash);
+			console.info(JSON.parse(tx.json));
 			process.exit();
 		}).catch(abort);
 	}).catch(abort);

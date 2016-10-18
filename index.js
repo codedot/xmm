@@ -349,12 +349,22 @@ class XMM {
 					amount: dst.amount
 				}
 			}).then(tx => {
-				tx = tx.txJSON;
-				tx = this.api.sign(tx, src.key);
-				tx = tx.signedTransaction;
+				tx = this.sign(tx, src);
 				resolve(tx);
 			}).catch(reject);
 		});
+	}
+
+	sign(tx, arg) {
+		const json = tx.txJSON;
+
+		tx = this.api.sign(json, arg.key);
+
+		return {
+			blob: tx.signedTransaction,
+			hash: tx.id,
+			json: json
+		};
 	}
 }
 
