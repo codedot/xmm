@@ -5,7 +5,7 @@ exports.handler = config => {
 	require(".").connect(config).then(xmm => {
 		const arg = xmm.parse(config.string);
 		const msg = [];
-		let type, asset, issuer;
+		let type, asset, issuer, key;
 
 		type = arg.type;
 		msg.push(type);
@@ -26,6 +26,12 @@ exports.handler = config => {
 			msg.push("in wallet");
 		case "wallet":
 			msg.push(arg.wallet);
+
+			key = arg.key;
+			if (key) {
+				msg.push("with key");
+				msg.push(key);
+			}
 		}
 
 		console.info(msg.join(" "));

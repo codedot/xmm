@@ -7,6 +7,7 @@ class XMMarg {
 	constructor(xmm, obj) {
 		this.shorten = xmm.shorten.bind(xmm);
 		this.toabs = xmm.toabs.bind(xmm);
+		this.wallets = xmm.wallets;
 		this.assets = xmm.assets;
 
 		this.input = JSON.stringify(obj);
@@ -22,6 +23,14 @@ class XMMarg {
 		this.value = obj.value;
 		this.asset = obj.asset;
 		this.wallet = obj.wallet;
+	}
+
+	get key() {
+		let id = this.shorten(this.wallet);
+
+		id = this.wallets[id];
+		if (id)
+			return id.secret;
 	}
 
 	get amount() {
