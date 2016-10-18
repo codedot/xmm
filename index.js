@@ -339,7 +339,7 @@ class XMM {
 
 			me = src.wallet;
 
-			resolve(this.api.preparePayment(me, {
+			this.api.preparePayment(me, {
 				source: {
 					address: me,
 					maxAmount: src.amount
@@ -348,7 +348,12 @@ class XMM {
 					address: dst.wallet,
 					amount: dst.amount
 				}
-			}));
+			}).then(tx => {
+				tx = tx.txJSON;
+				tx = this.api.sign(tx, src.key);
+				tx = tx.signedTransaction;
+				resolve(tx);
+			}).catch(reject);
 		});
 	}
 }
