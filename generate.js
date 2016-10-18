@@ -1,5 +1,8 @@
 exports.command = "generate";
 exports.desc = "Generate testnet configuration";
+exports.aliases = [
+	"gen"
+];
 exports.builder = yargs => yargs;
 exports.handler = config => {
 	require(".").generate().then(dummy => {

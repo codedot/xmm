@@ -1,5 +1,8 @@
 exports.command = "send <src> <dst>";
 exports.desc = "Pay or convert a value";
+exports.aliases = [
+	"pay"
+];
 exports.builder = yargs => yargs;
 exports.handler = config => {
 	require(".").connect(config).then(xmm => {

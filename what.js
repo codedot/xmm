@@ -1,5 +1,8 @@
 exports.command = "what <string>";
 exports.desc = "Tell what a string means";
+exports.aliases = [
+	"parse"
+];
 exports.builder = yargs => yargs;
 exports.handler = config => {
 	require(".").connect(config).then(xmm => {

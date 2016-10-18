@@ -10,11 +10,11 @@ This package provides an `xmm` command with the following interface:
 Usage: xmm [options] <command> [arguments]
 
 Commands:
-  balance <wallet>  Check balances in a wallet
-  generate          Generate testnet configuration
-  ledger [count]    Wait for ledger(s) to close
-  send <src> <dst>  Pay or convert a value
-  what <string>     Tell what a string means
+  balance <wallet>  Check balances in a wallet       [aliases: bal, b]
+  generate          Generate testnet configuration      [aliases: gen]
+  ledger [count]    Wait for ledger(s) to close        [aliases: wait]
+  send <src> <dst>  Pay or convert a value              [aliases: pay]
+  what <string>     Tell what a string means          [aliases: parse]
 
 Options:
   --assets       Dictionary of assets                    [default: {}]
