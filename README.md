@@ -23,6 +23,8 @@ Options:
   --cushion, -f  Factor to multiply estimated fee         [default: 1]
   --delta, -d    Stake to trade                        [default: 0.01]
   --ledger, -l   Historical ledger version                    [number]
+  --maxfee, -m   The maximum fee to pay             [default: 0.00001]
+  --offset, -o   Offset from the current legder           [default: 3]
   --server, -s   WebSocket server     [default: "wss://s1.ripple.com"]
   --timeout, -t  Timeout in seconds for requests          [default: 5]
   --wallets      Dictionary of wallets                   [default: {}]

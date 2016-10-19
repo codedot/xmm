@@ -51,6 +51,18 @@ const opts = {
 		number: true,
 		global: true
 	},
+	maxfee: {
+		alias: "m",
+		describe: "The maximum fee to pay",
+		default: 1e-5,
+		global: true
+	},
+	offset: {
+		alias: "o",
+		describe: "Offset from the current legder",
+		default: 3,
+		global: true
+	},
 	server: {
 		alias: "s",
 		describe: "WebSocket server",

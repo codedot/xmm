@@ -160,6 +160,9 @@ class XMMarg {
 
 class XMM {
 	constructor(opts) {
+		this.instr = {};
+		this.instr.maxLedgerVersionOffset = opts.offset;
+		this.instr.maxFee = opts.maxfee.toString();
 		this.ledger = opts.ledger;
 		this.api = opts.api;
 		this.wallets = opts.wallets;
@@ -348,7 +351,7 @@ class XMM {
 					address: dst.wallet,
 					amount: dst.amount
 				}
-			}).then(tx => {
+			}, this.instr).then(tx => {
 				tx = this.sign(tx, src);
 				resolve(tx);
 			}).catch(reject);
@@ -384,6 +387,8 @@ exports.connect = config => new Promise(resolve => {
 			api.once("ledger", tick);
 		} else {
 			const xmm = new XMM({
+				maxfee: config.maxfee,
+				offset: config.offset,
 				ledger: ledger.ledgerVersion,
 				api: api,
 				wallets: config.wallets,
