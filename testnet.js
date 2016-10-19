@@ -1,10 +1,10 @@
-exports.command = "generate";
+exports.command = "testnet";
 exports.desc = "Generate testnet configuration";
 exports.aliases = [
-	"gen"
+	"dummy"
 ];
 exports.builder = yargs => yargs;
-exports.handler = generate((config, dummy) => {
+exports.handler = testnet((config, dummy) => {
 	console.info(JSON.stringify(dummy, null, "\t"));
 	process.exit();
 });

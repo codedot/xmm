@@ -14,9 +14,9 @@ global.connect = callback => config => {
 	require(".").connect(config).then(callback).catch(abort);
 };
 
-global.generate = callback => config => {
+global.testnet = callback => config => {
 	callback = callback.bind(null, config);
-	require(".").generate().then(callback).catch(abort);
+	require(".").testnet().then(callback).catch(abort);
 };
 
 const getobj = x => ("string" == typeof x) ? JSON.parse(x) : x;
@@ -97,7 +97,7 @@ require("yargs")
 	.global("config")
 	.default("config", conf, "~/.xmm.json")
 	.command(require("./balance"))
-	.command(require("./generate"))
+	.command(require("./testnet"))
 	.command(require("./ledger"))
 	.command(require("./send"))
 	.command(require("./what"))

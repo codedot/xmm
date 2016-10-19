@@ -11,7 +11,7 @@ Usage: xmm [options] <command> [arguments]
 
 Commands:
   balance <wallet>  Check balances in a wallet       [aliases: bal, b]
-  generate          Generate testnet configuration      [aliases: gen]
+  testnet           Generate testnet configuration    [aliases: dummy]
   ledger [count]    Wait for ledger(s) to close        [aliases: wait]
   send <src> <dst>  Pay or convert a value              [aliases: pay]
   what <string>     Tell what a string means          [aliases: parse]
@@ -35,7 +35,7 @@ Options:
 
 Through `require("xmm")` this package exports two functions.
 
-The `.generate()` function returns a Promise of dummy configuration
+The `.testnet()` function returns a Promise of dummy configuration
 for [the Ripple Test Net][3] with two funded accounts created for
 developing and testing purposes.
 

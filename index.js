@@ -398,7 +398,7 @@ exports.connect = config => new Promise(resolve => {
 	api.connect();
 });
 
-exports.generate = opts => new Promise((resolve, reject) => {
+exports.testnet = opts => new Promise((resolve, reject) => {
 	const request = require("request");
 
 	function create(resolve, reject)
