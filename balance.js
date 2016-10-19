@@ -5,15 +5,13 @@ exports.aliases = [
 	"b"
 ];
 exports.builder = yargs => yargs;
-exports.handler = config => {
-	require(".").connect(config).then(xmm => {
-		const wallet = config.wallet;
-		const ledger = config.ledger;
+exports.handler = connect((config, xmm) => {
+	const wallet = config.wallet;
+	const ledger = config.ledger;
 
-		xmm.balance(wallet, ledger).then(lines => {
-			lines = lines.map(line => line.human);
-			console.info(lines.join("\n"));
-			process.exit();
-		}).catch(abort);
+	xmm.balance(wallet, ledger).then(lines => {
+		lines = lines.map(line => line.human);
+		console.info(lines.join("\n"));
+		process.exit();
 	}).catch(abort);
-};
+});

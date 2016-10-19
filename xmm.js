@@ -9,6 +9,16 @@ global.abort = (msg, error) => {
 	process.exit(1);
 };
 
+global.connect = callback => config => {
+	callback = callback.bind(null, config);
+	require(".").connect(config).then(callback).catch(abort);
+};
+
+global.generate = callback => config => {
+	callback = callback.bind(null, config);
+	require(".").generate().then(callback).catch(abort);
+};
+
 const getobj = x => ("string" == typeof x) ? JSON.parse(x) : x;
 const opts = {
 	assets: {

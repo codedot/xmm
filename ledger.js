@@ -4,9 +4,7 @@ exports.aliases = [
 	"wait"
 ];
 exports.builder = yargs => yargs;
-exports.handler = config => {
-	require(".").connect(config).then(xmm => {
-		console.info(xmm.ledger);
-		process.exit();
-	}).catch(abort);
-};
+exports.handler = connect((config, xmm) => {
+	console.info(xmm.ledger);
+	process.exit();
+});

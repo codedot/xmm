@@ -4,9 +4,7 @@ exports.aliases = [
 	"gen"
 ];
 exports.builder = yargs => yargs;
-exports.handler = config => {
-	require(".").generate().then(dummy => {
-		console.info(JSON.stringify(dummy, null, "\t"));
-		process.exit();
-	}).catch(abort);
-};
+exports.handler = generate((config, dummy) => {
+	console.info(JSON.stringify(dummy, null, "\t"));
+	process.exit();
+});

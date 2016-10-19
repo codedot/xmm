@@ -5,8 +5,8 @@ all:
 	npm install
 	$(TEST) -h
 	$(TEST) generate >|$(CONF)
-	$(TEST) balance rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh
 	$(TEST) ledger
+	$(TEST) balance rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh
 	$(TEST) what XMM@fund
 	$(TEST) what XRP:1e-6@bank
 	$(TEST) what EUR.bank:.42@root
