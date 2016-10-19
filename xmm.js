@@ -14,11 +14,6 @@ global.connect = callback => config => {
 	require(".").connect(config).then(callback).catch(abort);
 };
 
-global.testnet = callback => config => {
-	callback = callback.bind(null, config);
-	require(".").testnet().then(callback).catch(abort);
-};
-
 const getobj = x => ("string" == typeof x) ? JSON.parse(x) : x;
 const opts = {
 	assets: {
