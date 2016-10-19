@@ -398,6 +398,16 @@ exports.connect = config => new Promise(resolve => {
 	api.connect();
 });
 
+function generate()
+{
+	const ripple = require("ripple-lib");
+	const api = new ripple.RippleAPI();
+
+	return api.generateAddress();
+}
+
+exports.generate = generate;
+
 exports.testnet = opts => new Promise((resolve, reject) => {
 	const request = require("request");
 

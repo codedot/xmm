@@ -10,10 +10,11 @@ This package provides an `xmm` command with the following interface:
 Usage: xmm [options] <command> [arguments]
 
 Commands:
-  balance <wallet>  Check balances in a wallet       [aliases: bal, b]
-  testnet           Generate testnet configuration    [aliases: dummy]
+  balance <wallet>  Check balances in a wallet       [aliases: b, bal]
+  generate          Create a new Ripple address    [aliases: gen, new]
   ledger [count]    Wait for ledger(s) to close        [aliases: wait]
   send <src> <dst>  Pay or convert a value              [aliases: pay]
+  testnet           Generate testnet configuration    [aliases: dummy]
   what <string>     Tell what a string means          [aliases: parse]
 
 Options:

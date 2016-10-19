@@ -1,8 +1,8 @@
 exports.command = "balance <wallet>";
 exports.desc = "Check balances in a wallet";
 exports.aliases = [
-	"bal",
-	"b"
+	"b",
+	"bal"
 ];
 exports.builder = yargs => yargs;
 exports.handler = connect((config, xmm) => {

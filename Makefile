@@ -3,8 +3,8 @@ TEST = node xmm -c $(CONF)
 
 all:
 	npm install
-	$(TEST) -h
 	$(TEST) testnet >|$(CONF)
+	$(TEST) generate
 	$(TEST) ledger
 	$(TEST) balance rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh
 	$(TEST) what XMM@fund
