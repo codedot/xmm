@@ -409,26 +409,27 @@ function generate()
 exports.generate = generate;
 
 exports.testnet = opts => new Promise((resolve, reject) => {
-	const request = require("request");
+	require("request").post({
+		url: faucet,
+		json: true
+	}, (error, response, body) => {
+		let code;
 
-	function create(resolve, reject)
-	{
-		request.post({
-			url: faucet,
-			json: true
-		}, (error, response, body) => {
-			resolve(body.account);
-		});
-	}
+		if (error) {
+			reject(error);
+			return;
+		}
 
-	Promise.all([
-		new Promise(create),
-		new Promise(create)
-	]).then(wallets => {
+		code = response.statusCode;
+		if (201 != code) {
+			reject(body + code.toString());
+			return;
+		}
+
 		resolve({
 			wallets: {
-				fund: wallets[0],
-				bank: wallets[1],
+				bank: body.account,
+				fund: generate(),
 				root: root
 			},
 			assets: {
@@ -438,5 +439,5 @@ exports.testnet = opts => new Promise((resolve, reject) => {
 			},
 			server: testnet
 		});
-	}).catch(reject);
+	});
 });

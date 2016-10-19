@@ -37,7 +37,7 @@ Options:
 Through `require("xmm")` this package exports two functions.
 
 The `.testnet()` function returns a Promise of dummy configuration
-for [the Ripple Test Net][3] with two funded accounts created for
+for [the Ripple Test Net][3] with one funded account created for
 developing and testing purposes.
 
 The `.connect(config)` function takes configuration as its argument and
