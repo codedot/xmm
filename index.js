@@ -282,7 +282,7 @@ class XMM {
 			});
 		}
 
-		return list.map(line => new XMMarg(this, {
+		return list.map(line => this.parse({
 			type: "value",
 			value: parseFloat(line.value),
 			asset: {
@@ -387,6 +387,7 @@ exports.connect = config => new Promise(resolve => {
 			api.once("ledger", tick);
 		} else {
 			const xmm = new XMM({
+				yes: config.yes,
 				maxfee: config.maxfee,
 				offset: config.offset,
 				ledger: ledger.ledgerVersion,

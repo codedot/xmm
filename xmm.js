@@ -75,6 +75,12 @@ const opts = {
 		describe: "Dictionary of wallets",
 		default: {},
 		global: true
+	},
+	yes: {
+		alias: "y",
+		describe: "Do not ask for confirmation",
+		boolean: true,
+		global: true
 	}
 };
 
