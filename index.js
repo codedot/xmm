@@ -306,26 +306,19 @@ class XMM {
 	balance(wallet, ledger) {
 		const arg = this.parse(wallet);
 		const reason = arg.expect("wallet");
+		let me;
 
 		if (!ledger)
 			ledger = this.ledger;
 
-		return new Promise((resolve, reject) => {
-			let me;
+		if (reason)
+			return Promise.reject(reason);
 
-			if (reason) {
-				reject(reason);
-				return;
-			}
+		me = arg.wallet;
 
-			me = arg.wallet;
-
-			this.api.getBalances(me, {
-				ledgerVersion: ledger
-			}).then(list => {
-				resolve(this.tobal(list, me));
-			}).catch(reject);
-		});
+		return this.api.getBalances(me, {
+			ledgerVersion: ledger
+		}).then(list => this.tobal(list, me));
 	}
 
 	parse(arg) {
@@ -333,33 +326,27 @@ class XMM {
 	}
 
 	send(src, dst) {
-		return new Promise((resolve, reject) => {
-			let reason;
+		let reason;
 
-			src = this.parse(src);
-			reason = src.expect("value");
-			if (reason) {
-				reject(reason);
-				return;
+		src = this.parse(src);
+		reason = src.expect("value");
+		if (reason)
+			return Promise.reject(reason);
+
+		dst = this.parse(dst);
+		reason = dst.expect("value");
+		if (reason)
+			return Promise.reject(reason);
+
+		return this.submit("Payment", src, {
+			source: {
+				address: src.wallet,
+				maxAmount: src.amount
+			},
+			destination: {
+				address: dst.wallet,
+				amount: dst.amount
 			}
-
-			dst = this.parse(dst);
-			reason = dst.expect("value");
-			if (reason) {
-				reject(reason);
-				return;
-			}
-
-			this.submit("Payment", src, {
-				source: {
-					address: src.wallet,
-					maxAmount: src.amount
-				},
-				destination: {
-					address: dst.wallet,
-					amount: dst.amount
-				}
-			}).then(resolve).catch(reject);
 		});
 	}
 
@@ -372,13 +359,10 @@ class XMM {
 		const method = api["prepare" + type].bind(api);
 		const id = me.wallet;
 		const key = me.key;
-		const promise = method(id, param, this.instr);
 
-		return new Promise((resolve, reject) => {
-			promise.then(tx => {
-				tx = this.sign(tx, key);
-				resolve(tx);
-			}).catch(reject);
+		return method(id, param, this.instr).then(tx => {
+			tx = this.sign(tx, key);
+			return tx;
 		});
 	}
 
