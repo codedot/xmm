@@ -160,6 +160,16 @@ class XMMarg {
 
 class XMM {
 	constructor(opts) {
+		let yes = opts.yes;
+
+		if ("function" != typeof yes) {
+			const result = !!yes;
+
+			yes = tx => result;
+		}
+
+		this.confirm = tx => Promise.resolve(yes(tx));
+
 		this.instr = {};
 		this.instr.maxLedgerVersionOffset = opts.offset;
 		this.instr.maxFee = opts.maxfee.toString();
