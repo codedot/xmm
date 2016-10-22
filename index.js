@@ -351,31 +351,22 @@ class XMM {
 	}
 
 	submit(type, me, param) {
-		return this.prepare(type, me, param);
-	}
-
-	prepare(type, me, param) {
 		const api = this.api;
 		const method = api["prepare" + type].bind(api);
 		const id = me.wallet;
 		const key = me.key;
 
 		return method(id, param, this.instr).then(tx => {
-			tx = this.sign(tx, key);
-			return tx;
+			const json = tx.txJSON;
+
+			tx = this.api.sign(json, key);
+
+			return {
+				blob: tx.signedTransaction,
+				hash: tx.id,
+				json: json
+			};
 		});
-	}
-
-	sign(tx, key) {
-		const json = tx.txJSON;
-
-		tx = this.api.sign(json, key);
-
-		return {
-			blob: tx.signedTransaction,
-			hash: tx.id,
-			json: json
-		};
 	}
 }
 
