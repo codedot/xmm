@@ -350,7 +350,7 @@ class XMM {
 				return;
 			}
 
-			this.prepare("Payment", src, {
+			this.submit("Payment", src, {
 				source: {
 					address: src.wallet,
 					maxAmount: src.amount
@@ -361,6 +361,10 @@ class XMM {
 				}
 			}).then(resolve).catch(reject);
 		});
+	}
+
+	submit(type, me, param) {
+		return this.prepare(type, me, param);
 	}
 
 	prepare(type, me, param) {
