@@ -359,25 +359,29 @@ class XMM {
 					address: dst.wallet,
 					amount: dst.amount
 				}
-			}).then(tx => {
-				tx = this.sign(tx, src);
+			}).then(resolve).catch(reject);
+		});
+	}
+
+	prepare(type, me, param) {
+		const api = this.api;
+		const method = api["prepare" + type].bind(api);
+		const id = me.wallet;
+		const key = me.key;
+		const promise = method(id, param, this.instr);
+
+		return new Promise((resolve, reject) => {
+			promise.then(tx => {
+				tx = this.sign(tx, key);
 				resolve(tx);
 			}).catch(reject);
 		});
 	}
 
-	prepare(type, me, param) {
-		let api = this.api;
-
-		api = api["prepare" + type].bind(api);
-
-		return api(me.wallet, param, this.instr);
-	}
-
-	sign(tx, arg) {
+	sign(tx, key) {
 		const json = tx.txJSON;
 
-		tx = this.api.sign(json, arg.key);
+		tx = this.api.sign(json, key);
 
 		return {
 			blob: tx.signedTransaction,
