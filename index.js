@@ -334,7 +334,7 @@ class XMM {
 
 	send(src, dst) {
 		return new Promise((resolve, reject) => {
-			let reason, me;
+			let reason;
 
 			src = this.parse(src);
 			reason = src.expect("value");
@@ -350,22 +350,28 @@ class XMM {
 				return;
 			}
 
-			me = src.wallet;
-
-			this.api.preparePayment(me, {
+			this.prepare("Payment", src, {
 				source: {
-					address: me,
+					address: src.wallet,
 					maxAmount: src.amount
 				},
 				destination: {
 					address: dst.wallet,
 					amount: dst.amount
 				}
-			}, this.instr).then(tx => {
+			}).then(tx => {
 				tx = this.sign(tx, src);
 				resolve(tx);
 			}).catch(reject);
 		});
+	}
+
+	prepare(type, me, param) {
+		let api = this.api;
+
+		api = api["prepare" + type].bind(api);
+
+		return api(me.wallet, param, this.instr);
 	}
 
 	sign(tx, arg) {
