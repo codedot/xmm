@@ -12,6 +12,7 @@ all:
 	$(TEST) what EUR.bank:.42@root
 	$(TEST) balance bank
 	$(TEST) send XRP:123.456@bank XRP:123.456@fund -y
+	$(TEST) send XRP:123.456@bank XRP:123.456@fund
 
 clean:
 	-rm -f $(CONF)

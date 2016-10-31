@@ -2,9 +2,23 @@
 
 function ask(tx)
 {
+	const rl = require("readline").createInterface({
+		input: process.stdin,
+		output: process.stdout
+	});
+
 	console.info(tx.hash);
 	console.info(JSON.parse(tx.json));
-	return false;
+
+	return new Promise(resolve => {
+		const expected = "submit";
+		const query = `Type "${expected}" to confirm: `;
+
+		rl.question(query, answer => {
+			rl.close();
+			resolve(expected == answer);
+		});
+	});
 }
 
 global.connect = callback => config => {
