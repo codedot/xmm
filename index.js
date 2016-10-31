@@ -168,7 +168,16 @@ class XMM {
 			yes = tx => result;
 		}
 
-		this.confirm = tx => Promise.resolve(yes(tx));
+		this.confirm = tx => {
+			const ask = Promise.resolve(yes(tx));
+
+			return ask.then(granted => {
+				if (granted)
+					return tx;
+				else
+					throw "Not confirmed";
+			});
+		}
 
 		this.instr = {};
 		this.instr.maxLedgerVersionOffset = opts.offset;
@@ -361,11 +370,11 @@ class XMM {
 
 			tx = this.api.sign(json, key);
 
-			return {
+			return this.confirm({
 				blob: tx.signedTransaction,
 				hash: tx.id,
 				json: json
-			};
+			});
 		});
 	}
 }

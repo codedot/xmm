@@ -1,5 +1,20 @@
 #!/usr/bin/env node
 
+function ask(tx)
+{
+	console.info(tx.hash);
+	console.info(JSON.parse(tx.json));
+	return false;
+}
+
+global.connect = callback => config => {
+	if (!config.yes)
+		config.yes = ask;
+
+	callback = callback.bind(null, config);
+	require(".").connect(config).then(callback).catch(abort);
+};
+
 global.abort = (msg, error) => {
 	if (error)
 		console.error(error);
@@ -7,11 +22,6 @@ global.abort = (msg, error) => {
 		console.error(msg);
 
 	process.exit(1);
-};
-
-global.connect = callback => config => {
-	callback = callback.bind(null, config);
-	require(".").connect(config).then(callback).catch(abort);
 };
 
 const getobj = x => ("string" == typeof x) ? JSON.parse(x) : x;
