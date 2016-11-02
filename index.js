@@ -1,5 +1,5 @@
 const faucet = "https://faucet.altnet.rippletest.net/accounts";
-const testnet = "wss://s.altnet.rippletest.net:51233";
+const altnet = "wss://s.altnet.rippletest.net:51233";
 const root = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
 const syntax = /^(|([^:@]+)(|:([^:@]+))@)([^@]+)$/;
 
@@ -430,7 +430,7 @@ function generate()
 
 exports.generate = generate;
 
-exports.testnet = opts => new Promise((resolve, reject) => {
+exports.altnet = opts => new Promise((resolve, reject) => {
 	require("request").post({
 		url: faucet,
 		json: true
@@ -460,7 +460,7 @@ exports.testnet = opts => new Promise((resolve, reject) => {
 				USD: "USD.bank",
 				BTC: "BTC.bank"
 			},
-			server: testnet
+			server: altnet
 		});
 	});
 });

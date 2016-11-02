@@ -3,7 +3,7 @@ TEST = node xmm -c $(CONF)
 
 all:
 	npm install
-	$(TEST) testnet >|$(CONF)
+	$(TEST) altnet >|$(CONF)
 	$(TEST) generate
 	$(TEST) ledger
 	$(TEST) balance rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh

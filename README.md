@@ -10,11 +10,11 @@ This package provides an `xmm` command with the following interface:
 Usage: xmm [options] <command> [arguments]
 
 Commands:
+  altnet            Generate Test Net configuration   [aliases: dummy]
   balance <wallet>  Check balances in a wallet       [aliases: b, bal]
   generate          Create a new Ripple address    [aliases: gen, new]
   ledger [count]    Wait for ledger(s) to close        [aliases: wait]
   send <src> <dst>  Pay or convert a value              [aliases: pay]
-  testnet           Generate testnet configuration    [aliases: dummy]
   what <string>     Tell what a string means          [aliases: parse]
 
 Options:
@@ -39,7 +39,7 @@ Options:
 
 Through `require("xmm")` this package exports two functions.
 
-The `.testnet()` function returns a Promise of dummy configuration
+The `.altnet()` function returns a Promise of dummy configuration
 for [the Ripple Test Net][3] with one funded account created for
 developing and testing purposes.
 
