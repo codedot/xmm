@@ -441,6 +441,7 @@ exports.testnet = opts => new Promise((resolve, reject) => {
 		}
 
 		resolve({
+			yes: true,
 			wallets: {
 				bank: body.account,
 				fund: generate(),
