@@ -347,7 +347,7 @@ class XMM {
 		if (reason)
 			return Promise.reject(reason);
 
-		return this.submit("Payment", src, {
+		return this.make("Payment", src, {
 			source: {
 				address: src.wallet,
 				maxAmount: src.amount
@@ -359,7 +359,7 @@ class XMM {
 		});
 	}
 
-	submit(type, me, param) {
+	make(type, me, param) {
 		const api = this.api;
 		const method = api["prepare" + type].bind(api);
 		const id = me.wallet;
