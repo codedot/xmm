@@ -11,6 +11,7 @@ exports.handler = connect((config, xmm) => {
 	xmm.send(src, dst).then(tx => {
 		console.info(tx.hash);
 		console.info(JSON.parse(tx.json));
+		console.info(`${tx.code}: ${tx.desc}`);
 		process.exit();
 	}).catch(abort);
 });

@@ -375,6 +375,14 @@ class XMM {
 				hash: tx.id,
 				json: json
 			});
+		}).then(tx => this.submit(tx));
+	}
+
+	submit(tx) {
+		return this.api.submit(tx.blob).then(result => {
+			tx.code = result.resultCode;
+			tx.desc = result.resultMessage;
+			return tx;
 		});
 	}
 }
