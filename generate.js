@@ -1,5 +1,5 @@
 exports.command = "generate";
-exports.desc = "Create a new Ripple address";
+exports.desc = "Create a new address";
 exports.aliases = [
 	"gen",
 	"new"

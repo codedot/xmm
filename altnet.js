@@ -1,5 +1,5 @@
 exports.command = "altnet";
-exports.desc = "Generate Test Net configuration";
+exports.desc = "Generate altnet configuration";
 exports.aliases = [
 	"dummy"
 ];
