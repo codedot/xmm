@@ -154,7 +154,7 @@ class XMMarg {
 
 	expect(type) {
 		if (type != this.type)
-			return `${this.input} is not ${type}`;
+			throw `${this.input} is not ${type}`;
 	}
 }
 
@@ -314,15 +314,12 @@ class XMM {
 
 	balance(wallet, ledger) {
 		const arg = this.parse(wallet);
-		const reason = arg.expect("wallet");
 		let me;
 
 		if (!ledger)
 			ledger = this.ledger;
 
-		if (reason)
-			return Promise.reject(reason);
-
+		arg.expect("wallet");
 		me = arg.wallet;
 
 		return this.api.getBalances(me, {
@@ -335,17 +332,11 @@ class XMM {
 	}
 
 	send(src, dst) {
-		let reason;
-
 		src = this.parse(src);
-		reason = src.expect("value");
-		if (reason)
-			return Promise.reject(reason);
+		src.expect("value");
 
 		dst = this.parse(dst);
-		reason = dst.expect("value");
-		if (reason)
-			return Promise.reject(reason);
+		dst.expect("value");
 
 		return this.make("Payment", src, {
 			source: {
