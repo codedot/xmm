@@ -151,11 +151,6 @@ class XMMarg {
 			wallet: wallet
 		};
 	}
-
-	expect(type) {
-		if (type != this.type)
-			throw `${this.input} is not ${type}`;
-	}
 }
 
 class XMM {
@@ -313,30 +308,29 @@ class XMM {
 	}
 
 	balance(wallet, ledger) {
-		const arg = this.parse(wallet);
-		let me;
+		const arg = this.parse(wallet, "wallet");
+		const me = arg.wallet;
 
 		if (!ledger)
 			ledger = this.ledger;
-
-		arg.expect("wallet");
-		me = arg.wallet;
 
 		return this.api.getBalances(me, {
 			ledgerVersion: ledger
 		}).then(list => this.tobal(list, me));
 	}
 
-	parse(arg) {
-		return new XMMarg(this, arg);
+	parse(arg, type) {
+		arg = new XMMarg(this, arg);
+
+		if (type && type != arg.type)
+			throw `${arg.input} is not ${type}`;
+
+		return arg;
 	}
 
 	send(src, dst) {
-		src = this.parse(src);
-		src.expect("value");
-
-		dst = this.parse(dst);
-		dst.expect("value");
+		src = this.parse(src, "value");
+		dst = this.parse(dst, "value");
 
 		return this.make("Payment", src, {
 			source: {
