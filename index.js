@@ -265,7 +265,7 @@ class XMM {
 			return wallet.address;
 	}
 
-	tobal(list, me) {
+	tovalues(list, me) {
 		const iou = {};
 
 		list = list.filter(line => {
@@ -316,7 +316,7 @@ class XMM {
 
 		return this.api.getBalances(me, {
 			ledgerVersion: ledger
-		}).then(list => this.tobal(list, me));
+		}).then(list => this.tovalues(list, me));
 	}
 
 	parse(arg, type) {
@@ -368,6 +368,35 @@ class XMM {
 			tx.code = result.resultCode;
 			tx.desc = result.resultMessage;
 			return tx;
+		});
+	}
+
+	cost(dst, me) {
+		dst = this.parse(dst, "value");
+
+		if (me)
+			me = this.parse(me, "wallet");
+		else
+			me = dst;
+
+		me = me.wallet;
+
+		return this.api.getPaths({
+			source: {
+				address: me
+			},
+			destination: {
+				address: dst.wallet,
+				amount: dst.amount
+			}
+		}).then(list => {
+			list = list.map(line => {
+				line = line.source;
+				line = line.maxAmount;
+				return line;
+			});
+
+			return this.tovalues(list, me);
 		});
 	}
 }

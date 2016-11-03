@@ -91,7 +91,7 @@ const opts = {
 	timeout: {
 		alias: "t",
 		describe: "Timeout in seconds for requests",
-		default: 5,
+		default: 10,
 		global: true
 	},
 	wallets: {
