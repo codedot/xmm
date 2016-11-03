@@ -415,23 +415,19 @@ function generate()
 
 exports.generate = generate;
 
-exports.altnet = opts => new Promise((resolve, reject) => {
+exports.altnet = opts => new Promise(resolve => {
 	require("request").post({
 		url: faucet,
 		json: true
 	}, (error, response, body) => {
 		let code;
 
-		if (error) {
-			reject(error);
-			return;
-		}
+		if (error)
+			throw error;
 
 		code = response.statusCode;
-		if (201 != code) {
-			reject(body + code.toString());
-			return;
-		}
+		if (201 != code)
+			throw body + code.toString();
 
 		resolve({
 			yes: true,
