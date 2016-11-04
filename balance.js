@@ -1,4 +1,4 @@
-exports.command = "balance <wallet>";
+exports.command = "balance <me>";
 exports.desc = "Check balances in a wallet";
 exports.aliases = [
 	"b",
@@ -6,10 +6,10 @@ exports.aliases = [
 ];
 exports.builder = yargs => yargs;
 exports.handler = connect((config, xmm) => {
-	const wallet = config.wallet;
+	const me = config.me;
 	const ledger = config.ledger;
 
-	xmm.balance(wallet, ledger).then(lines => {
+	xmm.balance(me, ledger).then(lines => {
 		lines = lines.map(line => line.human);
 		console.info(lines.join("\n"));
 		process.exit();

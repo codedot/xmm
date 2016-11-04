@@ -307,9 +307,9 @@ class XMM {
 		}));
 	}
 
-	balance(wallet, ledger) {
-		const arg = this.parse(wallet, "wallet");
-		const me = arg.wallet;
+	balance(me, ledger) {
+		me = this.parse(me, "wallet");
+		me = me.wallet;
 
 		if (!ledger)
 			ledger = this.ledger;
