@@ -298,15 +298,28 @@ class XMM {
 			});
 		}
 
-		return list.map(line => this.parse({
-			type: "value",
-			value: parseFloat(line.value),
-			asset: {
-				code: line.currency,
-				issuer: line.counterparty
-			},
-			wallet: me
-		}));
+		return list.map(line => {
+			const code = line.currency;
+			const asset = {
+				code: code
+			};
+
+			if ("XRP" != code) {
+				let issuer = line.counterparty;
+
+				if (!issuer)
+					issuer = me;
+
+				asset.issuer = issuer;
+			}
+
+			return this.parse({
+				type: "value",
+				value: parseFloat(line.value),
+				asset: asset,
+				wallet: me
+			});
+		});
 	}
 
 	balance(me, ledger) {
