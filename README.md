@@ -17,7 +17,7 @@ Commands:
   ledger [count]     Wait for ledger(s) to close       [aliases: wait]
   offer <src> <dst>  Create a limit order             [aliases: order]
   send <src> <dst>   Pay or convert a value             [aliases: pay]
-  trust <asset>      Set a trust line                   [aliases: set]
+  trust <dst>        Set a trust line                   [aliases: set]
   what <string>      Tell what a string means         [aliases: parse]
 
 Options:
