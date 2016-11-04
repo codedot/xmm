@@ -268,6 +268,8 @@ class XMM {
 	tovalues(list, me) {
 		const iou = {};
 
+		me = me.wallet;
+
 		list = list.filter(line => {
 			const value = parseFloat(line.value);
 
@@ -309,12 +311,11 @@ class XMM {
 
 	balance(me, ledger) {
 		me = this.parse(me, "wallet");
-		me = me.wallet;
 
 		if (!ledger)
 			ledger = this.ledger;
 
-		return this.api.getBalances(me, {
+		return this.api.getBalances(me.wallet, {
 			ledgerVersion: ledger
 		}).then(list => this.tovalues(list, me));
 	}
@@ -379,11 +380,9 @@ class XMM {
 		else
 			me = dst;
 
-		me = me.wallet;
-
 		return this.api.getPaths({
 			source: {
-				address: me
+				address: me.wallet
 			},
 			destination: {
 				address: dst.wallet,
