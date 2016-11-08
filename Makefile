@@ -15,6 +15,10 @@ all:
 	$(TEST) ledger 2
 	$(TEST) balance fund
 	$(TEST) trust USD:100@fund
+	$(TEST) cost USD:12.3@fund bank
+	$(TEST) ledger
+	$(TEST) send USD:12.3@bank USD:12.3@fund
+	$(TEST) balance -n 3 fund
 
 clean:
 	-rm -f $(CONF)

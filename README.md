@@ -12,6 +12,7 @@ Usage: xmm [options] <command> [arguments]
 Commands:
   altnet             Generate altnet configuration    [aliases: dummy]
   balance <me>       Check balances in a wallet      [aliases: b, bal]
+  cost <dst> [me]    Estimate cost of a value         [aliases: price]
   generate           Create a new address          [aliases: gen, new]
   ledger [count]     Wait for ledger(s) to close       [aliases: wait]
   offer <src> <dst>  Create a limit order             [aliases: order]
