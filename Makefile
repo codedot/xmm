@@ -14,6 +14,7 @@ all:
 	$(TEST) send XRP:123.456@bank XRP:123.456@fund
 	$(TEST) ledger 2
 	$(TEST) balance fund
+	$(TEST) trust USD:100@fund
 
 clean:
 	-rm -f $(CONF)

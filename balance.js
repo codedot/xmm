@@ -6,10 +6,7 @@ exports.aliases = [
 ];
 exports.builder = yargs => yargs;
 exports.handler = connect((config, xmm) => {
-	const me = config.me;
-	const ledger = config.ledger;
-
-	xmm.balance(me, ledger).then(lines => {
+	xmm.balance(config.me, config.ledger).then(lines => {
 		lines = lines.map(line => line.human);
 		console.info(lines.join("\n"));
 		process.exit();

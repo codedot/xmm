@@ -411,6 +411,18 @@ class XMM {
 			return this.tovalues(list, me);
 		});
 	}
+
+	trust(dst) {
+		let amount;
+
+		dst = this.parse(dst, "value");
+
+		amount = dst.amount;
+		amount.limit = amount.value;
+		delete amount.value;
+
+		return this.make("Trustline", dst, amount);
+	}
 }
 
 exports.connect = config => new Promise(resolve => {

@@ -5,10 +5,7 @@ exports.aliases = [
 ];
 exports.builder = yargs => yargs;
 exports.handler = connect((config, xmm) => {
-	const src = config.src;
-	const dst = config.dst;
-
-	xmm.send(src, dst).then(tx => {
+	xmm.send(config.src, config.dst).then(tx => {
 		console.info(tx.hash);
 		console.info(JSON.parse(tx.json));
 		console.info(`${tx.code}: ${tx.desc}`);

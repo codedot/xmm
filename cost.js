@@ -5,10 +5,7 @@ exports.aliases = [
 ];
 exports.builder = yargs => yargs;
 exports.handler = connect((config, xmm) => {
-	const dst = config.dst;
-	const me = config.me;
-
-	xmm.cost(dst, me).then(lines => {
+	xmm.cost(config.dst, config.me).then(lines => {
 		lines = lines.map(line => line.human);
 		console.info(lines.join("\n"));
 		process.exit();
