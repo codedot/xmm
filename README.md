@@ -15,7 +15,7 @@ Commands:
   cost <dst> [me]    Estimate cost of a value         [aliases: price]
   generate           Create a new address          [aliases: gen, new]
   ledger [count]     Wait for ledger(s) to close       [aliases: wait]
-  offer <src> <dst>  Create a limit order             [aliases: order]
+  offer <src> <dst>  Create a limit order     [aliases: create, order]
   send <src> <dst>   Pay or convert a value             [aliases: pay]
   trust <dst>        Set a trust line                   [aliases: set]
   what <string>      Tell what a string means         [aliases: parse]

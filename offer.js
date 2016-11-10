@@ -1,6 +1,7 @@
 exports.command = "offer <src> <dst>";
 exports.desc = "Create a limit order";
 exports.aliases = [
+	"create",
 	"order"
 ];
 exports.builder = yargs => yargs;
