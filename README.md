@@ -19,6 +19,7 @@ Commands:
   offer <src> <dst>  Create a limit order     [aliases: create, order]
   send <src> <dst>   Pay or convert a value             [aliases: pay]
   trust <dst>        Set a trust line                   [aliases: set]
+  view <me>          List active orders        [aliases: active, list]
   what <string>      Tell what a string means         [aliases: parse]
 
 Options:
