@@ -1,7 +1,9 @@
 const faucet = "https://faucet.altnet.rippletest.net/accounts";
 const altnet = "wss://s.altnet.rippletest.net:51233";
 const root = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";
-const syntax = /^(|([^:@]+)(|:([^:@]+))@)([^@]+)$/;
+const syntax = "^(?:_(?::_(?:\\\/_:_~_)?)?@)?_$";
+const pattern = syntax.replace(/_/g, "([^:@\\\/~]+)");
+const re = new RegExp(pattern);
 
 class XMMarg {
 	constructor(xmm, obj) {
@@ -20,6 +22,9 @@ class XMMarg {
 			return;
 
 		this.type = obj.type;
+		this.base = obj.base;
+		this.cost = obj.cost;
+		this.seq = obj.seq;
 		this.value = obj.value;
 		this.asset = obj.asset;
 		this.wallet = obj.wallet;
@@ -110,17 +115,24 @@ class XMMarg {
 	}
 
 	parse(str) {
-		const tokens = syntax.exec(str);
-		let asset, value, wallet, type;
+		const tokens = re.exec(str);
+		let asset, value, wallet, type, base, cost, seq;
 
 		if (!tokens)
 			return;
 
-		asset = tokens[2];
-		value = tokens[4];
-		wallet = tokens[5];
+		tokens.shift();
 
-		if (value)
+		asset = tokens.shift();
+		value = tokens.shift();
+		base = tokens.shift();
+		cost = tokens.shift();
+		seq = tokens.shift();
+		wallet = tokens.shift();
+
+		if (cost)
+			type = "offer";
+		else if (value)
 			type = "value";
 		else if (asset)
 			type = "asset";
@@ -130,6 +142,16 @@ class XMMarg {
 			return;
 
 		switch (type) {
+		case "offer":
+			base = this.toasset(base);
+			if (!base)
+				return;
+			cost = parseFloat(cost);
+			if (!isFinite(cost))
+				return;
+			seq = parseInt(seq);
+			if (!(seq > 0))
+				seq = void(0);
 		case "value":
 			value = parseFloat(value);
 			if (!isFinite(value))
@@ -146,6 +168,9 @@ class XMMarg {
 
 		return {
 			type: type,
+			base: base,
+			cost: cost,
+			seq: seq,
 			value: value,
 			asset: asset,
 			wallet: wallet

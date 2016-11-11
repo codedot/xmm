@@ -13,6 +13,20 @@ exports.handler = connect((config, xmm) => {
 	msg.push(type);
 
 	switch (type) {
+	case "offer":
+		msg.push(arg.seq);
+		msg.push("of");
+		msg.push(arg.cost);
+		asset = arg.base;
+		msg.push(asset.code);
+
+		issuer = asset.issuer;
+		if (issuer) {
+			msg.push("issued by");
+			msg.push(issuer);
+		}
+
+		msg.push("for");
 	case "value":
 		msg.push(arg.value);
 	case "asset":

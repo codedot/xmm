@@ -6,10 +6,10 @@ all:
 	$(TEST) altnet >|$(CONF)
 	$(TEST) generate
 	$(TEST) ledger
-	$(TEST) balance rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh
 	$(TEST) what root
 	$(TEST) what XRP@bank
 	$(TEST) what EUR.bank:.1e-1@fund
+	$(TEST) what USD:500/BTC:1~42@fund
 	$(TEST) balance bank
 	$(TEST) send XRP:123.456@bank XRP:123.456@fund
 	$(TEST) ledger 2
