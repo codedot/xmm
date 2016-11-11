@@ -10,17 +10,17 @@ This package provides an `xmm` command with the following interface:
 Usage: xmm [options] <command> [arguments]
 
 Commands:
-  altnet             Generate altnet configuration    [aliases: dummy]
-  balance <me>       Check balances in a wallet      [aliases: b, bal]
-  cost <dst> [me]    Estimate cost of a value         [aliases: price]
-  generate           Create a new address          [aliases: gen, new]
-  kill <seq> <me>    Cancel an existing order    [aliases: cancel, rm]
-  ledger [count]     Wait for ledger(s) to close       [aliases: wait]
-  offer <src> <dst>  Create a limit order     [aliases: create, order]
-  send <src> <dst>   Pay or convert a value             [aliases: pay]
-  trust <dst>        Set a trust line                   [aliases: set]
-  view <me>          List active orders        [aliases: active, list]
-  what <string>      Tell what a string means         [aliases: parse]
+  altnet            Generate altnet configuration     [aliases: dummy]
+  balance <me>      Check balances in a wallet       [aliases: b, bal]
+  cost <dst> [me]   Estimate cost of a value          [aliases: price]
+  generate          Create a new address           [aliases: gen, new]
+  kill <offer>      Cancel an existing order     [aliases: cancel, rm]
+  ledger [count]    Wait for ledger(s) to close        [aliases: wait]
+  offer <offer>     Create a limit order      [aliases: create, order]
+  send <src> <dst>  Pay or convert a value              [aliases: pay]
+  trust <dst>       Set a trust line                    [aliases: set]
+  view <me>         List active orders         [aliases: active, list]
+  what <string>     Tell what a string means          [aliases: parse]
 
 Options:
   --assets       Dictionary of assets                    [default: {}]

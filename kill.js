@@ -1,4 +1,4 @@
-exports.command = "kill <seq> <me>";
+exports.command = "kill <offer>";
 exports.desc = "Cancel an existing order";
 exports.aliases = [
 	"cancel",

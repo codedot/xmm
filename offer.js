@@ -1,4 +1,4 @@
-exports.command = "offer <src> <dst>";
+exports.command = "offer <offer>";
 exports.desc = "Create a limit order";
 exports.aliases = [
 	"create",
