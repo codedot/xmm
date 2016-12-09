@@ -93,9 +93,22 @@ class XMMarg {
 		let str = "";
 
 		switch (this.type) {
+		case "offer":
+			str = "~" + this.seq;
+			value = this.cost.toString();
+			str = ":" + value + str;
+			asset = this.base;
+			issuer = asset.issuer;
+			asset = asset.code;
+			if (issuer) {
+				issuer = this.shorten(issuer);
+				asset = asset + "." + issuer;
+				asset = this.shorten(asset);
+			}
+			str = "/" + asset + str;
 		case "value":
 			value = this.value.toString();
-			str = ":" + value;
+			str = ":" + value + str;
 		case "asset":
 			asset = this.asset;
 			issuer = asset.issuer;
