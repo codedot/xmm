@@ -19,8 +19,10 @@ all:
 	$(TEST) cost USD:12.3@fund bank
 	$(TEST) ledger
 	$(TEST) view fund
+	$(TEST) kill XMM:100/XRP:99~1@fund
 	$(TEST) send USD:12.3@bank USD:12.3@fund
 	$(TEST) balance -n 3 fund
+	$(TEST) view fund
 
 clean:
 	-rm -f $(CONF)

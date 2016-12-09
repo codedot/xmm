@@ -424,6 +424,14 @@ class XMM {
 		});
 	}
 
+	cancel(offer) {
+		offer = this.parse(offer, "offer");
+
+		return this.make("OrderCancellation", offer, {
+			orderSequence: offer.seq
+		});
+	}
+
 	make(type, me, param) {
 		const api = this.api;
 		const method = api["prepare" + type].bind(api);
