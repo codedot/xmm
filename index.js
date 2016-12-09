@@ -38,24 +38,6 @@ class XMMarg {
 			return id.secret;
 	}
 
-	get amount() {
-		const obj = {};
-		const asset = this.asset;
-		let issuer;
-
-		if ("value" != this.type)
-			return;
-
-		obj.value = this.value.toString();
-		obj.currency = asset.code;
-
-		issuer = asset.issuer;
-		if (issuer)
-			obj.counterparty = issuer;
-
-		return obj;
-	}
-
 	toasset(str) {
 		const obj = {};
 		let asset, issuer;
@@ -100,6 +82,40 @@ class XMMarg {
 		}
 
 		return asset;
+	}
+
+	toamount(value, asset) {
+		const obj = {
+			value: value.toString(),
+			currency: asset.code
+		};
+		const issuer = asset.issuer;
+
+		if (issuer)
+			obj.counterparty = issuer;
+
+		return obj;
+	}
+
+	get amount() {
+		if ("value" != this.type)
+			return;
+
+		return this.toamount(this.value, this.asset);
+	}
+
+	get src() {
+		if ("offer" != this.type)
+			return;
+
+		return this.toamount(this.cost, this.base);
+	}
+
+	get dst() {
+		if ("offer" != this.type)
+			return;
+
+		return this.toamount(this.value, this.asset);
 	}
 
 	get human() {
@@ -394,6 +410,17 @@ class XMM {
 				address: dst.wallet,
 				amount: dst.amount
 			}
+		});
+	}
+
+	create(offer) {
+		offer = this.parse(offer, "offer");
+
+		return this.make("Order", offer, {
+			direction: "buy",
+			quantity: offer.dst,
+			totalPrice: offer.src,
+			orderToReplace: offer.seq
 		});
 	}
 
