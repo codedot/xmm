@@ -6,7 +6,7 @@ exports.aliases = [
 ];
 exports.builder = yargs => yargs;
 exports.handler = connect((config, xmm) => {
-	xmm.offers(config.me).then(lines => {
+	xmm.offers(config.me, config.ledger).then(lines => {
 		lines = lines.map(line => line.human);
 		console.info(lines.join("\n"));
 		process.exit();

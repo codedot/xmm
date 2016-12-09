@@ -458,11 +458,14 @@ class XMM {
 		return list.map(line => this.tooffer(line, me));
 	}
 
-	offers(me) {
+	offers(me, ledger) {
 		me = this.parse(me, "wallet");
 
+		if (!ledger)
+			ledger = this.ledger;
+
 		return this.api.getOrders(me.wallet, {
-			ledgerVersion: this.ledger
+			ledgerVersion: ledger
 		}).then(list => this.tooffers(list, me));
 	}
 
