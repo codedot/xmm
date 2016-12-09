@@ -88,36 +88,37 @@ class XMMarg {
 		return this.assets[asset];
 	}
 
+	tostr(asset) {
+		let issuer = asset.issuer;
+
+		asset = asset.code;
+
+		if (issuer) {
+			issuer = this.shorten(issuer);
+			asset = asset + "." + issuer;
+			asset = this.shorten(asset);
+		}
+
+		return asset;
+	}
+
 	get human() {
-		let value, asset, issuer, wallet;
+		let value, asset, issuer, wallet, seq;
 		let str = "";
 
 		switch (this.type) {
 		case "offer":
-			str = "~" + this.seq;
+			seq = this.seq.toString();
+			str = "~" + seq + str;
 			value = this.cost.toString();
 			str = ":" + value + str;
-			asset = this.base;
-			issuer = asset.issuer;
-			asset = asset.code;
-			if (issuer) {
-				issuer = this.shorten(issuer);
-				asset = asset + "." + issuer;
-				asset = this.shorten(asset);
-			}
+			asset = this.tostr(this.base);
 			str = "/" + asset + str;
 		case "value":
 			value = this.value.toString();
 			str = ":" + value + str;
 		case "asset":
-			asset = this.asset;
-			issuer = asset.issuer;
-			asset = asset.code;
-			if (issuer) {
-				issuer = this.shorten(issuer);
-				asset = asset + "." + issuer;
-				asset = this.shorten(asset);
-			}
+			asset = this.tostr(this.asset);
 			str = asset + str + "@";
 		case "wallet":
 			wallet = this.wallet;

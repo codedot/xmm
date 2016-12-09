@@ -6,8 +6,14 @@ exports.aliases = [
 exports.builder = yargs => yargs;
 exports.handler = connect((config, xmm) => {
 	const arg = xmm.parse(config.string);
+	const human = arg.human;
 	const msg = [];
 	let type, asset, issuer, key;
+
+	if (human) {
+		msg.push(human);
+		msg.push("is");
+	}
 
 	type = arg.type;
 	msg.push(type);
