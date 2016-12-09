@@ -424,6 +424,48 @@ class XMM {
 		});
 	}
 
+	tooffer(order, me) {
+		const seq = order.properties.sequence;
+		const spec = order.specification;
+		const sell = ("sell" == spec.direction);
+		const quantity = spec.quantity;
+		const price = spec.totalPrice;
+		const src = sell ? quantity : price;
+		const dst = sell ? price : quantity;
+		const cost = parseFloat(src.value);
+		const base = {
+			code: src.currency,
+			issuer: src.counterparty
+		};
+		const value = parseFloat(dst.value);
+		const asset = {
+			code: dst.currency,
+			issuer: dst.counterparty
+		};
+
+		return this.parse({
+			type: "offer",
+			wallet: me.wallet,
+			seq: seq,
+			cost: cost,
+			base: base,
+			value: value,
+			asset: asset
+		});
+	}
+
+	tooffers(list, me) {
+		return list.map(line => this.tooffer(line, me));
+	}
+
+	offers(me) {
+		me = this.parse(me, "wallet");
+
+		return this.api.getOrders(me.wallet, {
+			ledgerVersion: this.ledger
+		}).then(list => this.tooffers(list, me));
+	}
+
 	cost(dst, me) {
 		dst = this.parse(dst, "value");
 

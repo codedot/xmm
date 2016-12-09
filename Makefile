@@ -6,6 +6,7 @@ all:
 	$(TEST) altnet >|$(CONF)
 	$(TEST) generate
 	$(TEST) ledger
+	$(TEST) view root
 	$(TEST) what root
 	$(TEST) what XRP@bank
 	$(TEST) what EUR.bank:.1e-1@fund
