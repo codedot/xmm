@@ -8,7 +8,7 @@ exports.handler = connect((config, xmm) => {
 	const arg = xmm.parse(config.string);
 	const human = arg.human;
 	const msg = [];
-	let type, asset, issuer, key;
+	let type, asset, issuer, key, tag;
 
 	if (human) {
 		msg.push(human);
@@ -48,6 +48,12 @@ exports.handler = connect((config, xmm) => {
 		msg.push("in wallet");
 	case "wallet":
 		msg.push(arg.wallet);
+
+		tag = arg.tag;
+		if (tag) {
+			msg.push("tagged as");
+			msg.push(tag);
+		}
 
 		key = arg.key;
 		if (key) {

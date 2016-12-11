@@ -30,6 +30,14 @@ class XMMarg {
 		this.wallet = obj.wallet;
 	}
 
+	get tag() {
+		let id = this.shorten(this.wallet);
+
+		id = this.wallets[id];
+		if (id)
+			return id.tag;
+	}
+
 	get key() {
 		let id = this.shorten(this.wallet);
 
@@ -403,10 +411,12 @@ class XMM {
 
 		return this.make("Payment", src, {
 			source: {
+				tag: src.tag,
 				address: src.wallet,
 				maxAmount: src.amount
 			},
 			destination: {
+				tag: dst.tag,
 				address: dst.wallet,
 				amount: dst.amount
 			}
@@ -592,7 +602,7 @@ exports.altnet = opts => new Promise(resolve => {
 		url: faucet,
 		json: true
 	}, (error, response, body) => {
-		let code;
+		let code, account;
 
 		if (error)
 			throw error;
@@ -601,10 +611,13 @@ exports.altnet = opts => new Promise(resolve => {
 		if (201 != code)
 			throw body + code.toString();
 
+		account = body.account;
+		account.tag = 314;
+
 		resolve({
 			yes: true,
 			wallets: {
-				bank: body.account,
+				bank: account,
 				fund: generate(),
 				root: root
 			},
