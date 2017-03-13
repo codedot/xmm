@@ -9,7 +9,7 @@
 	"dependencies": {
 		"ajv": "4.0.5",
 		"ripple-lib": "0.17.4",
-		"yargs": "6.2.0",
+		"yargs": "7.0.2",
 		"request": "2.75.0"
 	}
 }

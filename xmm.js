@@ -43,68 +43,57 @@ const opts = {
 	assets: {
 		coerce: getobj,
 		describe: "Dictionary of assets",
-		default: {},
-		global: true
+		default: {}
 	},
 	count: {
 		alias: "n",
 		describe: "Number of ledgers to close",
-		default: 1,
-		global: true
+		default: 1
 	},
 	cushion: {
 		alias: "f",
 		describe: "Factor to multiply estimated fee",
-		default: 1,
-		global: true
+		default: 1
 	},
 	delta: {
 		alias: "d",
 		describe: "Stake to trade",
-		default: 0.01,
-		global: true
+		default: 0.01
 	},
 	ledger: {
 		alias: "l",
 		describe: "Historical ledger version",
-		number: true,
-		global: true
+		number: true
 	},
 	maxfee: {
 		alias: "m",
 		describe: "The maximum fee to pay",
-		default: 1e-5,
-		global: true
+		default: 1e-5
 	},
 	offset: {
 		alias: "o",
 		describe: "Offset from the current legder",
-		default: 3,
-		global: true
+		default: 3
 	},
 	server: {
 		alias: "s",
 		describe: "WebSocket server",
-		default: "wss://s1.ripple.com",
-		global: true
+		default: "wss://s1.ripple.com"
 	},
 	timeout: {
 		alias: "t",
 		describe: "Timeout in seconds for requests",
-		default: 10,
-		global: true
+		default: 10
 	},
 	wallets: {
 		coerce: getobj,
 		describe: "Dictionary of wallets",
-		default: {},
-		global: true
+		default: {}
 	},
 	yes: {
 		alias: "y",
 		describe: "Do not ask for confirmation",
-		boolean: true,
-		global: true
+		boolean: true
 	}
 };
 
@@ -131,7 +120,6 @@ require("yargs")
 	.options(opts)
 	.config("config", load)
 	.alias("config", "c")
-	.global("config")
 	.default("config", conf, "~/.xmm.json")
 	.command(require("./altnet"))
 	.command(require("./balance"))
