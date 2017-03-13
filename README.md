@@ -1,6 +1,6 @@
-This is a work in progress on an automated multi-currency combined
-market maker and market taker for [the Ripple network][1]
-providing both CLI and API based on [RippleAPI][2].
+This package encapsulates [RippleAPI][2], providing both CLI and API,
+and implements an automated multi-currency market maker for
+[the Ripple network][1] using the Talmud strategy.
 
 # CLI
 
@@ -14,6 +14,7 @@ Commands:
   balance <me>      Check balances in a wallet       [aliases: b, bal]
   cost <dst> [me]   Estimate cost of a value          [aliases: price]
   generate          Create a new address           [aliases: gen, new]
+  hedge <me>        Apply the Talmud strategy   [aliases: run, talmud]
   kill <offer>      Cancel an existing order     [aliases: cancel, rm]
   ledger [count]    Wait for ledger(s) to close        [aliases: wait]
   offer <offer>     Create a limit order      [aliases: create, order]
@@ -26,7 +27,6 @@ Options:
   --assets       Dictionary of assets                    [default: {}]
   --count, -n    Number of ledgers to close               [default: 1]
   --cushion, -f  Factor to multiply estimated fee         [default: 1]
-  --delta, -d    Stake to trade                        [default: 0.01]
   --ledger, -l   Historical ledger version                    [number]
   --maxfee, -m   The maximum fee to pay             [default: 0.00001]
   --offset, -o   Offset from the current legder           [default: 3]

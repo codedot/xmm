@@ -55,11 +55,6 @@ const opts = {
 		describe: "Factor to multiply estimated fee",
 		default: 1
 	},
-	delta: {
-		alias: "d",
-		describe: "Stake to trade",
-		default: 0.01
-	},
 	ledger: {
 		alias: "l",
 		describe: "Historical ledger version",
@@ -125,6 +120,7 @@ require("yargs")
 	.command(require("./balance"))
 	.command(require("./cost"))
 	.command(require("./generate"))
+	.command(require("./hedge"))
 	.command(require("./kill"))
 	.command(require("./ledger"))
 	.command(require("./offer"))
