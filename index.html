@@ -1,0 +1,58 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>XMM</title>
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.css" rel="stylesheet">
+
+<style>
+#output {
+	white-space: pre-wrap;
+}
+</style>
+
+<script src="https://code.jquery.com/jquery.js"></script>
+
+<script>
+let id;
+
+function setup()
+{
+	const header = $("#header");
+	const root = header.text();
+
+	id = location.hash.replace("#", "");
+	if (!id) {
+		id = prompt("Ripple address", root);
+		location.replace("#" + id);
+	}
+
+	header.text(id);
+}
+
+$(setup);
+</script>
+</head>
+
+<body>
+<div class="container-fluid">
+<div class="row">
+<div class="col-sm-10 col-sm-offset-1">
+<h1>
+<small>
+<samp id="header">rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh</samp>
+</small>
+</h1>
+
+<p>
+<samp id="output"></samp>
+</p>
+
+<hr>
+</div>
+</div>
+</div>
+</body>
+</html>
