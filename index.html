@@ -16,7 +16,57 @@
 <script src="https://code.jquery.com/jquery.js"></script>
 
 <script>
-let id;
+const balance = {};
+const changes = {};
+let id, output;
+
+function request(action, param, callback)
+{
+	const api = "https://data.ripple.com/v2/accounts/";
+
+	$.getJSON(api + id + "/" + action, param, callback);
+}
+
+function setline(line)
+{
+	const value = parseFloat(line.value);
+	let asset = line.currency;
+
+	if (value > 0) {
+		const issuer = line.counterparty;
+
+		if (issuer)
+			asset += "." + issuer;
+
+		balance[asset] = value;
+	} else if (value < 0) {
+		asset += "." + id;
+
+		if (balance[asset])
+			balance[asset] += value;
+		else
+			balance[asset] = value;
+	}
+}
+
+function addstep(step)
+{
+	const value = parseFloat(step.amount_change);
+	const issuer = step.counterparty;
+	const time = step.executed_time;
+	let asset = step.currency;
+	let entry = changes[time];
+
+	if (!entry) {
+		entry = {};
+		changes[time] = entry;
+	}
+
+	if (issuer)
+		asset += "." + issuer;
+
+	entry[asset] = value;
+}
 
 function setup()
 {
@@ -30,6 +80,23 @@ function setup()
 	}
 
 	header.text(id);
+
+	output = $("#output");
+
+	request("balances", data => {
+		data.balances.forEach(setline);
+		data = JSON.stringify(balance, null, "\t");
+		output.prepend(data + "\n");
+	});
+
+	request("balance_changes", {
+		descending: true,
+		limit: 1e3
+	}, data => {
+		data.balance_changes.forEach(addstep);
+		data = JSON.stringify(changes, null, "\t");
+		output.append("\n" + data);
+	});
 }
 
 $(setup);
