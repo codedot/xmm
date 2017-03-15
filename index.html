@@ -36,10 +36,22 @@ function request(action, param)
 	});
 }
 
+function getvalue(balance, iou)
+{
+	let p = 1;
+	let n = 0;
+
+	for (const asset in balance) {
+		p *= balance[asset];
+		++n;
+	}
+
+	return Math.pow(p, 1 / n) / iou;
+}
+
 function getstate(list)
 {
 	const dict = list.reduce((acc, line) => {
-		const balance = acc.balance;
 		const value = parseFloat(line.value);
 		let asset = line.currency;
 
@@ -49,31 +61,19 @@ function getstate(list)
 			if (issuer)
 				asset += "." + issuer;
 
-			balance[asset] = value;
-
-			acc.product *= value;
-			++acc.count;
-		} else if (value < 0) {
+			acc.balance[asset] = value;
+		} else {
 			asset += "." + id;
-
-			if (balance[asset])
-				balance[asset] += value;
-			else
-				balance[asset] = value;
-
 			acc.iou += -value;
 		}
 
 		return acc;
 	}, {
-		product: 1,
-		count: 0,
 		iou: 0,
 		balance: {}
 	});
 
-	dict.gm = Math.pow(dict.product, 1 / dict.count);
-	dict.proper = dict.gm / dict.iou;
+	dict.value = getvalue(dict.balance, dict.iou);
 	return dict;
 }
 
