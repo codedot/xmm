@@ -16,7 +16,6 @@
 <script src="https://code.jquery.com/jquery.js"></script>
 
 <script>
-const changes = {};
 let id, output;
 
 function request(action, param, callback)
@@ -24,25 +23,6 @@ function request(action, param, callback)
 	const api = "https://data.ripple.com/v2/accounts/";
 
 	$.getJSON(api + id + "/" + action, param, callback);
-}
-
-function addstep(step)
-{
-	const value = parseFloat(step.amount_change);
-	const issuer = step.counterparty;
-	const time = step.executed_time;
-	let asset = step.currency;
-	let entry = changes[time];
-
-	if (!entry) {
-		entry = {};
-		changes[time] = entry;
-	}
-
-	if (issuer)
-		asset += "." + issuer;
-
-	entry[asset] = value;
 }
 
 function getstate(list)
@@ -86,6 +66,56 @@ function getstate(list)
 	return dict;
 }
 
+function getsteps(list)
+{
+	const dict = list.reduce((acc, line) => {
+		const value = parseFloat(line.amount_change);
+		const issuer = line.counterparty;
+		const time = line.executed_time;
+		let asset = line.currency;
+		let entry = acc.current;
+		let delta = entry.delta;
+		let ready = false;
+
+		if (issuer)
+			asset += "." + issuer;
+
+		if (entry.time != time)
+			if (Object.keys(acc.tx).length > 1)
+				ready = true;
+
+		if (ready) {
+			acc.steps.push(entry);
+
+			delta = {};
+			entry = {
+				delta: delta
+			};
+			acc.current = entry;
+			acc.tx = {};
+		}
+
+		if ("exchange" == line.change_type)
+			acc.tx[asset] = true;
+
+		if (delta[asset])
+			delta[asset] += value;
+		else
+			delta[asset] = value;
+
+		entry.time = time;
+		return acc;
+	}, {
+		tx: {},
+		current: {
+			delta: {}
+		},
+		steps: []
+	});
+
+	return dict.steps;
+}
+
 function setup()
 {
 	const header = $("#header");
@@ -111,8 +141,8 @@ function setup()
 		descending: true,
 		limit: 1e3
 	}, data => {
-		data.balance_changes.forEach(addstep);
-		data = JSON.stringify(changes, null, "\t");
+		data = getsteps(data.balance_changes);
+		data = JSON.stringify(data, null, "\t");
 		output.append("\n" + data);
 	});
 }
