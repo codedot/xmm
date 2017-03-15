@@ -127,39 +127,49 @@ function getsteps(list)
 	return dict.steps;
 }
 
+function addline(step)
+{
+	$("#output").append([
+		step.time,
+		step.proper.toPrecision(7),
+		step.growth.toFixed(2) + "bp"
+	].join("\t") + "\n");
+}
+
 function revert(state, step)
 {
 	const balance = Object.assign({}, state.balance);
 	const delta = step.delta;
 	const iou = state.iou;
+	const proper = state.value;
+	let value, growth;
 
 	for (const asset in delta)
 		if (balance[asset])
 			balance[asset] -= delta[asset];
 
+	value = getvalue(balance, iou);
+	growth = 1e4 * (proper / value - 1);
+
 	return {
+		time: step.time,
+		shares: iou,
 		iou: iou,
 		balance: balance,
-		value: getvalue(balance, iou)
+		value: value,
+		proper: proper,
+		growth: growth
 	};
 }
 
 function show(state, steps)
 {
-	const output = $("#output");
-
 	steps.reduce((acc, line) => {
-		const prev = revert(acc, line);
-		const value = acc.value;
-		const growth = value / prev.value - 1;
+		const step = revert(acc, line);
 
-		output.append([
-			line.time,
-			value,
-			growth * 1e4
-		].join("\t") + "\n");
+		addline(step);
 
-		return prev;
+		return step;
 	}, state);
 
 	$("#view").show();
