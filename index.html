@@ -127,10 +127,41 @@ function getsteps(list)
 	return dict.steps;
 }
 
-function show(data)
+function revert(state, step)
 {
-	data = JSON.stringify(data, null, "\t");
-	$("#output").text(data);
+	const balance = Object.assign({}, state.balance);
+	const delta = step.delta;
+	const iou = state.iou;
+
+	for (const asset in delta)
+		if (balance[asset])
+			balance[asset] -= delta[asset];
+
+	return {
+		iou: iou,
+		balance: balance,
+		value: getvalue(balance, iou)
+	};
+}
+
+function show(state, steps)
+{
+	const output = $("#output");
+
+	steps.reduce((acc, line) => {
+		const prev = revert(acc, line);
+		const value = acc.value;
+		const growth = value / prev.value - 1;
+
+		output.append([
+			line.time,
+			value,
+			growth * 1e4
+		].join("\t") + "\n");
+
+		return prev;
+	}, state);
+
 	$("#view").show();
 }
 
@@ -156,11 +187,10 @@ function setup()
 	]).then(data => {
 		const balance = data[0].balances;
 		const changes = data[1].balance_changes;
+		const state = getstate(balance);
+		const steps = getsteps(changes);
 
-		show({
-			balance: getstate(balance),
-			changes: getsteps(changes)
-		});
+		show(state, steps);
 	}).catch(reason => {
 		const json = reason.responseJSON;
 
