@@ -8,15 +8,15 @@
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.css" rel="stylesheet">
 
 <style>
-#output {
-	white-space: pre-wrap;
+table {
+	font-family: monospace;
 }
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
 
 <script>
-let id;
+let id, output, template;
 
 function request(action, param)
 {
@@ -129,11 +129,28 @@ function getsteps(list)
 
 function addline(step)
 {
-	$("#output").append([
-		step.time,
-		step.proper.toPrecision(7),
-		step.growth.toFixed(2) + "bp"
-	].join("\t") + "\n");
+	const date = new Date(step.time);
+	const data = {
+		date: date.toLocaleDateString(),
+		time: date.toLocaleTimeString(),
+		value: step.proper.toPrecision(8),
+		growth: step.growth.toFixed(3) + " bp"
+	};
+	const row = template.clone();
+
+	function fill()
+	{
+		const cell = $(this);
+		const field = cell.attr("headers");
+		const datum = data[field];
+
+		if (datum)
+			cell.text(datum);
+	}
+
+	row.children().each(fill);
+
+	output.append(row);
 }
 
 function revert(state, step)
@@ -172,7 +189,7 @@ function show(state, steps)
 		return step;
 	}, state);
 
-	$("#view").show();
+	$("table").show();
 }
 
 function setup()
@@ -187,6 +204,11 @@ function setup()
 	}
 
 	header.text(id);
+
+	output = $("tbody");
+	template = $("tr.template");
+	template.detach();
+	template.removeClass("template");
 
 	Promise.all([
 		request("balances"),
@@ -231,12 +253,30 @@ $(setup);
 </div>
 
 <div id="alert" class="alert alert-danger" hidden>
+<samp>
 <strong id="error"></strong>
+</samp>
 </div>
 
-<div id="view" class="well" hidden>
-<samp id="output"></samp>
-</div>
+<table class="table table-striped table-bordered text-right" hidden>
+<thead>
+<tr>
+<th id="date">Date</th>
+<th id="time">Time</th>
+<th id="growth">Growth</th>
+<th id="value">Value</th>
+</tr>
+</thead>
+
+<tbody>
+<tr class="template">
+<td headers="date"></td>
+<td headers="time"></td>
+<td headers="growth"></td>
+<td headers="value"></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
