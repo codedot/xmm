@@ -27,6 +27,27 @@ function request(action, param, callback)
 	$.getJSON(api + id + "/" + action, param, callback);
 }
 
+function proper()
+{
+	let iou = 1;
+	let n = 0;
+	let p = 1;
+
+	for (const asset in balance) {
+		const value = balance[asset];
+
+		if (value < 0) {
+			iou = -value;
+			continue;
+		}
+
+		p *= value;
+		++n;
+	}
+
+	return Math.pow(p, 1 / n) / iou;
+}
+
 function setline(line)
 {
 	const value = parseFloat(line.value);
@@ -87,6 +108,7 @@ function setup()
 		data.balances.forEach(setline);
 		data = JSON.stringify(balance, null, "\t");
 		output.prepend(data + "\n");
+		output.prepend(proper() + "\n\n");
 	});
 
 	request("balance_changes", {
