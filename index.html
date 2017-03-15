@@ -16,7 +16,6 @@
 <script src="https://code.jquery.com/jquery.js"></script>
 
 <script>
-const balance = {};
 const changes = {};
 let id, output;
 
@@ -25,49 +24,6 @@ function request(action, param, callback)
 	const api = "https://data.ripple.com/v2/accounts/";
 
 	$.getJSON(api + id + "/" + action, param, callback);
-}
-
-function proper()
-{
-	let iou = 1;
-	let n = 0;
-	let p = 1;
-
-	for (const asset in balance) {
-		const value = balance[asset];
-
-		if (value < 0) {
-			iou = -value;
-			continue;
-		}
-
-		p *= value;
-		++n;
-	}
-
-	return Math.pow(p, 1 / n) / iou;
-}
-
-function setline(line)
-{
-	const value = parseFloat(line.value);
-	let asset = line.currency;
-
-	if (value > 0) {
-		const issuer = line.counterparty;
-
-		if (issuer)
-			asset += "." + issuer;
-
-		balance[asset] = value;
-	} else if (value < 0) {
-		asset += "." + id;
-
-		if (balance[asset])
-			balance[asset] += value;
-		else
-			balance[asset] = value;
-	}
 }
 
 function addstep(step)
@@ -89,6 +45,47 @@ function addstep(step)
 	entry[asset] = value;
 }
 
+function getstate(list)
+{
+	const dict = list.reduce((acc, line) => {
+		const balance = acc.balance;
+		const value = parseFloat(line.value);
+		let asset = line.currency;
+
+		if (value > 0) {
+			const issuer = line.counterparty;
+
+			if (issuer)
+				asset += "." + issuer;
+
+			balance[asset] = value;
+
+			acc.product *= value;
+			++acc.count;
+		} else if (value < 0) {
+			asset += "." + id;
+
+			if (balance[asset])
+				balance[asset] += value;
+			else
+				balance[asset] = value;
+
+			acc.iou += -value;
+		}
+
+		return acc;
+	}, {
+		product: 1,
+		count: 0,
+		iou: 0,
+		balance: {}
+	});
+
+	dict.gm = Math.pow(dict.product, 1 / dict.count);
+	dict.proper = dict.gm / dict.iou;
+	return dict;
+}
+
 function setup()
 {
 	const header = $("#header");
@@ -105,10 +102,9 @@ function setup()
 	output = $("#output");
 
 	request("balances", data => {
-		data.balances.forEach(setline);
-		data = JSON.stringify(balance, null, "\t");
+		data = getstate(data.balances);
+		data = JSON.stringify(data, null, "\t");
 		output.prepend(data + "\n");
-		output.prepend(proper() + "\n\n");
 	});
 
 	request("balance_changes", {
