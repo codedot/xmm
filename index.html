@@ -127,6 +127,13 @@ function getsteps(list)
 	return dict.steps;
 }
 
+function show(data)
+{
+	data = JSON.stringify(data, null, "\t");
+	$("#output").text(data);
+	$("#view").show();
+}
+
 function setup()
 {
 	const header = $("#header");
@@ -150,19 +157,20 @@ function setup()
 		const balance = data[0].balances;
 		const changes = data[1].balance_changes;
 
-		data = JSON.stringify({
+		show({
 			balance: getstate(balance),
 			changes: getsteps(changes)
-		}, null, "\t");
-
-		$("#output").text(data);
+		});
 	}).catch(reason => {
 		const json = reason.responseJSON;
 
 		if (json)
-			reason = json.message;
+			reason = "Error: " + json.message;
+		else
+			reason = "Unknown error";
 
-		$("#output").text(reason);
+		$("#error").text(reason);
+		$("#alert").show();
 	});
 }
 
@@ -174,17 +182,21 @@ $(setup);
 <div class="container-fluid">
 <div class="row">
 <div class="col-sm-10 col-sm-offset-1">
+<div class="page-header">
 <h1>
 <small>
 <samp id="header">rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh</samp>
 </small>
 </h1>
+</div>
 
-<p>
+<div id="alert" class="alert alert-danger" hidden>
+<strong id="error"></strong>
+</div>
+
+<div id="view" class="well" hidden>
 <samp id="output"></samp>
-</p>
-
-<hr>
+</div>
 </div>
 </div>
 </div>
