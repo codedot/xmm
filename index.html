@@ -184,13 +184,18 @@ function revert(state, step)
 	};
 }
 
-function show(state, steps)
+function show(start, state, steps)
 {
 	const nsteps = steps.length;
 	const oldest = steps[nsteps - 1].time;
 	const t0 = Date.parse(oldest);
 	const t1 = Date.now();
-	const nhrs = (t1 - t0) / 60 / 60 / 1e3;
+	const hour = 60 * 60 * 1e3;
+	const year = 365.25 * 24 * hour;
+	const nhrs = (t1 - t0) / hour;
+	const date = new Date(origin);
+	const ratio = state.value / start.value;
+	const period = t1 - date.getTime();
 	let profit = 0;
 	let interest, freq, rate;
 
@@ -215,6 +220,15 @@ function show(state, steps)
 		`${rate.toFixed(3)} bp/trade`
 	].join(" "));
 
+	profit = 100 * (ratio - 1);
+	rate = 100 * (Math.pow(ratio, year / period) - 1);
+
+	$("#summary").text([
+		`Since ${date.toLocaleDateString()}:`,
+		`total growth ${profit.toFixed(2)}%,`,
+		`annual interest rate ${rate.toFixed(2)}%`
+	].join(" "));
+
 	$("#view").show();
 }
 
@@ -236,19 +250,24 @@ function setup()
 	template.removeClass("template");
 
 	Promise.all([
+		request("balances", {
+			date: origin
+		}),
 		request("balances"),
 		request("balance_changes", {
 			descending: true,
 			limit: 1e3
 		})
 	]).then(data => {
-		const balance = data[0].balances;
-		const changes = data[1].balance_changes;
+		const initial = data[0].balances;
+		const balance = data[1].balances;
+		const changes = data[2].balance_changes;
+		const start = getstate(initial);
 		const state = getstate(balance);
 		const steps = getsteps(changes);
 
 		if (steps.length)
-			show(state, steps);
+			show(start, state, steps);
 		else
 			$("#empty").show();
 	}).catch(reason => {
@@ -274,9 +293,7 @@ $(setup);
 <div class="col-sm-10 col-sm-offset-1">
 <h1>
 <small>
-<samp id="header">
-Usage: ?rippleAddress=2016-12-31T23:59:59Z
-</samp>
+<samp id="header">Usage: ?rippleAddress=2016-12-31</samp>
 </small>
 </h1>
 
@@ -293,7 +310,7 @@ Usage: ?rippleAddress=2016-12-31T23:59:59Z
 </div>
 
 <div id="view" hidden>
-<div class="alert alert-success" hidden>
+<div class="alert alert-success">
 <samp>
 <strong id="summary"></strong>
 </samp>
