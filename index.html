@@ -16,7 +16,7 @@ table {
 <script src="https://code.jquery.com/jquery.js"></script>
 
 <script>
-let id, output, template;
+let id, origin, output, template;
 
 function request(action, param)
 {
@@ -215,21 +215,20 @@ function show(state, steps)
 		`${rate.toFixed(3)} bp/trade`
 	].join(" "));
 
-	$("table").show();
+	$("#view").show();
 }
 
 function setup()
 {
-	const header = $("#header");
-	const root = header.text();
+	const query = location.search.replace("?", "");
+	const param = query.split("=");
 
-	id = location.hash.replace("#", "");
-	if (!id) {
-		id = prompt("Ripple address", root);
-		location.replace("#" + id);
-	}
+	if (2 != param.length)
+		return;
 
-	header.text(id);
+	id = param[0];
+	origin = param[1];
+	$("#header").text(id);
 
 	output = $("tbody");
 	template = $("tr.template");
@@ -275,7 +274,9 @@ $(setup);
 <div class="col-sm-10 col-sm-offset-1">
 <h1>
 <small>
-<samp id="header">rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh</samp>
+<samp id="header">
+Usage: ?rippleAddress=2016-12-31T23:59:59Z
+</samp>
 </small>
 </h1>
 
@@ -291,7 +292,14 @@ $(setup);
 </samp>
 </div>
 
-<table class="table table-striped table-bordered text-right" hidden>
+<div id="view" hidden>
+<div class="alert alert-success" hidden>
+<samp>
+<strong id="summary"></strong>
+</samp>
+</div>
+
+<table class="table table-striped table-bordered text-right">
 <caption id="stats"></caption>
 
 <thead>
@@ -312,6 +320,7 @@ $(setup);
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 </div>
 </div>
