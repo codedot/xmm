@@ -80,6 +80,7 @@ function getstate(list)
 function getsteps(list)
 {
 	const dict = list.reduce((acc, line) => {
+		const final = parseFloat(line.final_balance);
 		const value = parseFloat(line.amount_change);
 		const issuer = line.counterparty;
 		const time = line.executed_time;
@@ -100,6 +101,7 @@ function getsteps(list)
 
 			delta = {};
 			entry = {
+				iou: 0,
 				delta: delta
 			};
 			acc.current = entry;
@@ -111,6 +113,8 @@ function getsteps(list)
 
 		if (delta[asset])
 			delta[asset] += value;
+		else if (final < 0)
+			entry.iou += value;
 		else
 			delta[asset] = value;
 
@@ -119,6 +123,7 @@ function getsteps(list)
 	}, {
 		tx: {},
 		current: {
+			iou: 0,
 			delta: {}
 		},
 		steps: []
@@ -157,7 +162,7 @@ function revert(state, step)
 {
 	const balance = Object.assign({}, state.balance);
 	const delta = step.delta;
-	const iou = state.iou;
+	const iou = state.iou - step.iou;
 	const proper = state.value;
 	let value, growth;
 
