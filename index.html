@@ -227,7 +227,10 @@ function setup()
 		const state = getstate(balance);
 		const steps = getsteps(changes);
 
-		show(state, steps);
+		if (steps.length)
+			show(state, steps);
+		else
+			$("#empty").show();
 	}).catch(reason => {
 		const json = reason.responseJSON;
 
@@ -255,6 +258,12 @@ $(setup);
 <samp id="header">rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh</samp>
 </small>
 </h1>
+</div>
+
+<div id="empty" class="alert alert-warning" hidden>
+<samp>
+<strong>No trades found</strong>
+</samp>
 </div>
 
 <div id="alert" class="alert alert-danger" hidden>
