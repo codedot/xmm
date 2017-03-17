@@ -259,8 +259,8 @@ function draw(log)
 		name: $("th#growth").text(),
 		type: "column",
 		tooltip: {
-			valueDecimals: 2,
-			valueSuffix: "\u2031"
+			valueDecimals: 3,
+			valueSuffix: " bp"
 		},
 		data: gdata
 	}];
@@ -286,7 +286,7 @@ function draw(log)
 				radius: 3
 			},
 			tooltip: {
-				valueDecimals: 5
+				valueDecimals: 6
 			},
 			data: data
 		});
@@ -344,6 +344,9 @@ function draw(log)
 			ordinal: false
 		},
 		chart: {
+			style: {
+				fontFamily: "monospace"
+			},
 			spacingTop: 0,
 			spacingRight: 1,
 			spacingLeft: 1,
@@ -364,7 +367,7 @@ function draw(log)
 			minorTickInterval: "auto"
 		}, {
 			labels: {
-				format: "{value}\u2031",
+				format: "{value} bp",
 				style: {
 					fontWeight: "bold"
 				},
