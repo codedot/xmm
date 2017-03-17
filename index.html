@@ -168,6 +168,8 @@ function revert(state, step)
 	const balance = Object.assign({}, state.balance);
 	const delta = step.delta;
 	const iou = state.iou - step.iou;
+	const nassets = Object.keys(balance).length;
+	const factor = nassets / iou;
 	const proper = state.value;
 	const price = {};
 	let value, growth;
@@ -177,7 +179,7 @@ function revert(state, step)
 			balance[asset] -= delta[asset];
 
 	for (const asset in balance)
-		price[asset] = balance[asset] / iou;
+		price[asset] = balance[asset] * factor;
 
 	value = getvalue(balance, iou);
 	growth = 1e4 * (proper / value - 1);
