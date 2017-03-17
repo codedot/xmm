@@ -11,9 +11,14 @@
 table {
 	font-family: monospace;
 }
+
+#chart {
+	height: 480px;
+}
 </style>
 
 <script src="https://code.jquery.com/jquery.js"></script>
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
 
 <script>
 let id, origin, output, template;
@@ -201,6 +206,7 @@ function show(start, state, steps)
 	const date = new Date(origin);
 	const ratio = state.value / start.value;
 	const period = t1 - date.getTime();
+	const log = [];
 	let profit = 0;
 	let interest, freq, rate;
 
@@ -210,6 +216,8 @@ function show(start, state, steps)
 		profit += step.growth;
 
 		addline(step);
+
+		log.unshift(step);
 
 		return step;
 	}, state);
@@ -235,6 +243,148 @@ function show(start, state, steps)
 	].join(" "));
 
 	$("#view").show();
+
+	draw(log);
+}
+
+function draw(log)
+{
+	const assets = Object.keys(log[0].price);
+	const pdata = [];
+	const gdata = [];
+	const series = [{
+		yAxis: 1,
+		name: $("th#growth").text(),
+		type: "column",
+		tooltip: {
+			valueDecimals: 2,
+			valueSuffix: "\u2031"
+		},
+		data: gdata
+	}];
+	const date = new Date();
+
+	Highcharts.setOptions({
+		global: {
+			timezoneOffset: date.getTimezoneOffset()
+		}
+	});
+
+	assets.forEach(asset => {
+		const data = [];
+
+		pdata.push(data);
+
+		series.push({
+			yAxis: 0,
+			name: asset,
+			type: "spline",
+			marker: {
+				enabled: true,
+				radius: 3
+			},
+			tooltip: {
+				valueDecimals: 5
+			},
+			data: data
+		});
+	});
+
+	log.forEach(entry => {
+		const time = Date.parse(entry.time);
+		const price = entry.price;
+
+		gdata.push([time, entry.growth]);
+
+		assets.forEach((asset, i) => {
+			const value = price[asset];
+
+			pdata[i].push([time, value]);
+		});
+	});
+
+	$("#chart").highcharts("StockChart", {
+		colors: [
+			"maroon",
+			"red",
+			"gold",
+			"lime",
+			"blue",
+			"fuchsia",
+			"turquoise",
+			"gray",
+			"crimson"
+		],
+		tooltip: {
+			animation: false,
+			hideDelay: 0
+		},
+		plotOptions: {
+			series: {
+				dataGrouping: {
+					smoothed: true,
+					forced: true
+				}
+			},
+			spline: {
+				compare: "percent"
+			},
+			column: {
+				color: "tan"
+			}
+		},
+		xAxis: {
+			labels: {
+				style: {
+					fontWeight: "bold"
+				}
+			},
+			ordinal: false
+		},
+		chart: {
+			spacingTop: 0,
+			spacingRight: 1,
+			spacingLeft: 1,
+			zoomType: "x",
+			animation: false
+		},
+		yAxis: [{
+			labels: {
+				style: {
+					fontWeight: "bold"
+				},
+				format: "{value}%",
+				align: "right",
+				x: -2
+			},
+			showFirstLabel: false,
+			showLastLabel: true,
+			minorTickInterval: "auto"
+		}, {
+			labels: {
+				format: "{value}\u2031",
+				style: {
+					fontWeight: "bold"
+				},
+				align: "left",
+				x: 2
+			},
+			opposite: false,
+			gridLineWidth: 0,
+			offset: 0
+		}],
+		rangeSelector: {
+			inputEnabled: false,
+			buttons: [{
+				type: "all",
+				text: "All"
+			}]
+		},
+		navigator: {
+			enabled: false
+		},
+		series: series
+	});
 }
 
 function setup()
@@ -320,6 +470,8 @@ $(setup);
 <strong id="summary"></strong>
 </samp>
 </div>
+
+<div id="chart"></div>
 
 <table class="table table-striped table-bordered text-right">
 <caption id="stats"></caption>
