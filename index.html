@@ -143,6 +143,7 @@ function addline(step)
 	const data = {
 		date: date.toLocaleDateString(),
 		time: date.toLocaleTimeString(),
+		shares: step.iou.toPrecision(8),
 		value: step.proper.toPrecision(8),
 		growth: step.growth.toFixed(3) + " bp"
 	};
@@ -503,6 +504,7 @@ $(setup);
 <th id="time">Time</th>
 <th id="growth">Growth</th>
 <th id="value">Value</th>
+<th id="shares">Shares</th>
 </tr>
 </thead>
 
@@ -512,6 +514,7 @@ $(setup);
 <td headers="time"></td>
 <td headers="growth"></td>
 <td headers="value"></td>
+<td headers="shares"></td>
 </tr>
 </tbody>
 </table>
