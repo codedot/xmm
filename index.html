@@ -187,7 +187,7 @@ function revert(state, step)
 
 	return {
 		time: step.time,
-		shares: iou,
+		delta: delta,
 		iou: iou,
 		price: price,
 		balance: balance,
@@ -246,6 +246,8 @@ function show(start, state, steps)
 	].join(" "));
 
 	$("#view").show();
+
+	console.info(log);
 
 	draw(log);
 }
