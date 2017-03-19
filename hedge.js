@@ -106,6 +106,7 @@ exports.handler = connect((config, xmm) => {
 
 		for (const pair in offers) {
 			const entry = offers[pair];
+			const proper = entry.proper;
 			const active = entry.active;
 			const top = active.sort((a, b) => {
 				if (a.ratio > b.ratio)
@@ -114,50 +115,55 @@ exports.handler = connect((config, xmm) => {
 					return 1;
 			});
 			const best = top.shift();
+			const offer = xmm.parse({
+				type: "offer",
+				base: entry.src.asset,
+				asset: entry.dst.asset,
+				value: proper.buy,
+				cost: proper.sell,
+				seq: best ? best.seq : 0,
+				wallet: me
+			});
 
 			if (best) {
-				const good = entry.proper.ratio;
+				const good = proper.ratio;
 				const ratio = best.ratio;
 
-				entry.active = best;
+				offer.old = best.human;
 
-				if (ratio < Math.sqrt(good))
-					bad.push(entry);
+				if (ratio < Math.sqrt(good)) {
+					offer.status = "bad";
+					bad.push(offer);
+				}
 
-				if (ratio > Math.pow(good, 2))
-					far.push(entry);
+				if (ratio > Math.pow(good, 2)) {
+					offer.status = "far";
+					far.push(offer);
+				}
 
 				zombie.push.apply(zombie, top);
 			} else {
-				entry.active = void(0);
-
-				absent.push(entry);
+				offer.status = "absent";
+				absent.push(offer);
 			}
 		}
 
-		zombie.forEach(offer => {
-			console.info(`zombie ${offer.human}`);
+		console.info({
+			zombie: zombie.map(offer => offer.human),
+			bad: bad.map(offer => {
+				return {
+					before: offer.old,
+					after: offer.human
+				};
+			}),
+			absent: absent.map(offer => offer.human),
+			far: far.map(offer => {
+				return {
+					before: offer.old,
+					after: offer.human
+				};
+			})
 		});
-
-		bad.forEach(entry => {
-			const active = entry.active;
-
-			console.info(`bad ${active.human}`);
-		});
-
-		absent.forEach(entry => {
-			const src = entry.src.human;
-			const dst = entry.dst.human;
-
-			console.info(`absent ${dst}/${src}`);
-		});
-
-		far.forEach(entry => {
-			const active = entry.active;
-
-			console.info(`far ${active.human}`);
-		});
-
 		process.exit();
 	}).catch(abort);
 });
