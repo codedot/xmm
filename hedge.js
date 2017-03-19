@@ -30,6 +30,7 @@ exports.handler = connect((config, xmm) => {
 		const xrp = `XRP@${me}`;
 		const offers = {};
 		const assets = [];
+		const bad = [];
 		let xrpbal, cost, stake;
 
 		state[0].forEach(line => {
@@ -84,14 +85,36 @@ exports.handler = connect((config, xmm) => {
 				wallet: me
 			}).human;
 			const pair = offers[`${dst}/${src}`];
+			let ratio = 1;
 
 			if (!pair)
 				return;
 
-			pair.active.push(line.human);
+			ratio *= 1 - line.cost / saldo[src];
+			ratio *= 1 + line.value / saldo[dst];
+			line.ratio = ratio;
+
+			pair.active.push(line);
 		});
 
-		console.log(offers);
+		for (const pair in offers) {
+			const entry = offers[pair];
+			const active = entry.active;
+			const top = active.sort((a, b) => {
+				if (a.ratio > b.ratio)
+					return -1;
+				else
+					return 1;
+			});
+			const best = top.shift();
+
+			if (best) {
+				entry.active = best.human;
+				bad.push.apply(bad, top);
+			}
+		}
+
+		console.info(offers, bad);
 		process.exit();
 	}).catch(abort);
 });
