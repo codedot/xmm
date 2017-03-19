@@ -1,3 +1,16 @@
+function getoffer(src, dst, stake)
+{
+	const sell = stake * src / (1 + stake);
+	const buy = stake * dst / (1 - stake);
+	const ratio = (1 - sell / src) * (1 + buy / dst);
+
+	return {
+		sell: sell,
+		buy: buy,
+		ratio: ratio
+	};
+}
+
 exports.command = "hedge <me>";
 exports.desc = "Apply the Talmud strategy";
 exports.aliases = [
@@ -13,8 +26,11 @@ exports.handler = connect((config, xmm) => {
 		xmm.balance(me, ledger),
 		xmm.offers(me, ledger)
 	]).then(state => {
-		const assets = {};
+		const saldo = {};
 		const xrp = `XRP@${me}`;
+		const offers = {};
+		const assets = [];
+		let xrpbal, cost, stake;
 
 		state[0].forEach(line => {
 			const value = line.value;
@@ -26,12 +42,37 @@ exports.handler = connect((config, xmm) => {
 					wallet: me
 				}).human;
 
-				assets[asset] = value;
+				saldo[asset] = value;
+				assets.push(asset);
 				return true;
 			}
 		});
 
-		state[1].filter(line => {
+		xvalue = saldo[xrp];
+		cost = config.maxfee / xvalue;
+		stake = assets.length * Math.sqrt(cost);
+
+		assets.forEach(asset => {
+			const value = saldo[asset];
+			let back, forth;
+
+			if (xrp == asset)
+				return;
+
+			back = getoffer(value, xvalue, stake);
+			offers[`${xrp}/${asset}`] = {
+				proper: back,
+				active: []
+			};
+
+			forth = getoffer(xvalue, value, stake);
+			offers[`${asset}/${xrp}`] = {
+				proper: forth,
+				active: []
+			};
+		});
+
+		state[1].forEach(line => {
 			const src = xmm.parse({
 				type: "asset",
 				asset: line.base,
@@ -42,16 +83,15 @@ exports.handler = connect((config, xmm) => {
 				asset: line.asset,
 				wallet: me
 			}).human;
+			const pair = offers[`${dst}/${src}`];
 
-			if (!assets[src] || !assets[dst])
-				return false;
+			if (!pair)
+				return;
 
-			if ((xrp == src) || (xrp == dst))
-				return true;
-		}).forEach(line => {
-			console.log(line.human);
+			pair.active.push(line.human);
 		});
 
+		console.log(offers);
 		process.exit();
 	}).catch(abort);
 });
