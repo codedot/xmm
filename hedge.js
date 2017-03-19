@@ -30,7 +30,9 @@ exports.handler = connect((config, xmm) => {
 		const xrp = `XRP@${me}`;
 		const offers = {};
 		const assets = [];
+		const dup = [];
 		const bad = [];
+		const far = [];
 		let xrpbal, cost, stake;
 
 		state[0].forEach(line => {
@@ -109,12 +111,22 @@ exports.handler = connect((config, xmm) => {
 			const best = top.shift();
 
 			if (best) {
-				entry.active = best.human;
-				bad.push.apply(bad, top);
+				const good = entry.proper.ratio;
+				const ratio = best.ratio;
+
+				if (ratio < Math.sqrt(good))
+					bad.push(entry);
+
+				if (ratio > Math.pow(good, 2))
+					far.push(entry);
+
+				entry.active = best;
 			}
+
+			dup.push.apply(dup, top);
 		}
 
-		console.info(offers, bad);
+		console.info({dup, bad, far});
 		process.exit();
 	}).catch(abort);
 });
