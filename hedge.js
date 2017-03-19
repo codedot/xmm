@@ -30,8 +30,9 @@ exports.handler = connect((config, xmm) => {
 		const xrp = `XRP@${me}`;
 		const offers = {};
 		const assets = [];
-		const dup = [];
+		const zombie = [];
 		const bad = [];
+		const absent = [];
 		const far = [];
 		let xrpbal, cost, stake;
 
@@ -64,12 +65,16 @@ exports.handler = connect((config, xmm) => {
 
 			back = getoffer(value, xvalue, stake);
 			offers[`${xrp}/${asset}`] = {
+				src: xmm.parse(asset),
+				dst: xmm.parse(xrp),
 				proper: back,
 				active: []
 			};
 
 			forth = getoffer(xvalue, value, stake);
 			offers[`${asset}/${xrp}`] = {
+				src: xmm.parse(xrp),
+				dst: xmm.parse(asset),
 				proper: forth,
 				active: []
 			};
@@ -114,19 +119,45 @@ exports.handler = connect((config, xmm) => {
 				const good = entry.proper.ratio;
 				const ratio = best.ratio;
 
+				entry.active = best;
+
 				if (ratio < Math.sqrt(good))
 					bad.push(entry);
 
 				if (ratio > Math.pow(good, 2))
 					far.push(entry);
 
-				entry.active = best;
-			}
+				zombie.push.apply(zombie, top);
+			} else {
+				entry.active = void(0);
 
-			dup.push.apply(dup, top);
+				absent.push(entry);
+			}
 		}
 
-		console.info({dup, bad, far});
+		zombie.forEach(offer => {
+			console.info(`zombie ${offer.human}`);
+		});
+
+		bad.forEach(entry => {
+			const active = entry.active;
+
+			console.info(`bad ${active.human}`);
+		});
+
+		absent.forEach(entry => {
+			const src = entry.src.human;
+			const dst = entry.dst.human;
+
+			console.info(`absent ${dst}/${src}`);
+		});
+
+		far.forEach(entry => {
+			const active = entry.active;
+
+			console.info(`far ${active.human}`);
+		});
+
 		process.exit();
 	}).catch(abort);
 });
