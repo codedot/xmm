@@ -21,6 +21,12 @@ function ask(tx)
 	});
 }
 
+global.print = tx => {
+	console.info(tx.hash);
+	console.info(JSON.parse(tx.json));
+	console.info(`${tx.code}: ${tx.desc}`);
+};
+
 global.connect = callback => config => {
 	if (!config.yes)
 		config.yes = ask;
