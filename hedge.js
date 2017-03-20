@@ -136,6 +136,7 @@ exports.handler = connect((config, xmm) => {
 				const good = proper.ratio;
 				const ratio = best.ratio;
 
+				offer.ratio = ratio;
 				offer.seq = best.seq;
 				offer.old = best.human;
 
@@ -158,9 +159,19 @@ exports.handler = connect((config, xmm) => {
 
 		script = Promise.resolve();
 		script = zombie.reduce(cancel, script);
-		script = bad.reduce(create, script);
+		script = bad.sort((a, b) => {
+			if (a.ratio < b.ratio)
+				return -1;
+			else
+				return 1;
+		}).reduce(create, script);
 		script = absent.reduce(create, script);
-		script = far.reduce(create, script);
+		script = far.sort((a, b) => {
+			if (a.ratio > b.ratio)
+				return -1;
+			else
+				return 1;
+		}).reduce(create, script);
 		script.then(() => {
 			process.exit();
 		}).catch(abort);
