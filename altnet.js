@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "altnet";
 exports.desc = "Generate altnet configuration";
 exports.aliases = [

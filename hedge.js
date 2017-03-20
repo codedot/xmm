@@ -1,3 +1,5 @@
+"use strict";
+
 function getoffer(src, dst, stake)
 {
 	const sell = stake * src / (1 + stake);

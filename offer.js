@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "offer <offer>";
 exports.desc = "Create a limit order";
 exports.aliases = [

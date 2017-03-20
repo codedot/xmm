@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "view <me>";
 exports.desc = "List active orders";
 exports.aliases = [

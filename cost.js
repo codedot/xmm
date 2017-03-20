@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "cost <dst> [me]";
 exports.desc = "Estimate cost of a value";
 exports.aliases = [

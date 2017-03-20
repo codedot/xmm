@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "balance <me>";
 exports.desc = "Check balances in a wallet";
 exports.aliases = [

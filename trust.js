@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "trust <dst>";
 exports.desc = "Set a trust line";
 exports.aliases = [

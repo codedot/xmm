@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "what <string>";
 exports.desc = "Tell what a string means";
 exports.aliases = [

@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "ledger [count]";
 exports.desc = "Wait for ledger(s) to close";
 exports.aliases = [

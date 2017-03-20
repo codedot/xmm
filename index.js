@@ -1,3 +1,5 @@
+"use strict";
+
 const faucet = "https://faucet.altnet.rippletest.net/accounts";
 const altnet = "wss://s.altnet.rippletest.net:51233";
 const root = "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh";

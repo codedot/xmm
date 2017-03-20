@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+"use strict";
+
 function ask(tx)
 {
 	const rl = require("readline").createInterface({

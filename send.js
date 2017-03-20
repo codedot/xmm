@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "send <src> <dst>";
 exports.desc = "Pay or convert a value";
 exports.aliases = [

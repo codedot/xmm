@@ -1,3 +1,5 @@
+"use strict";
+
 exports.command = "kill <offer>";
 exports.desc = "Cancel an existing order";
 exports.aliases = [
