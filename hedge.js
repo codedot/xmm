@@ -1,6 +1,6 @@
 "use strict";
 
-function getoffer(src, dst, stake)
+function talmud(src, dst, stake)
 {
 	const sell = stake * src / (1 + stake);
 	const buy = stake * dst / (1 - stake);
@@ -32,35 +32,30 @@ exports.handler = connect((config, xmm) => {
 		return xmm.create(offer).then(print);
 	});
 	const compute = (saldo) => {
-		const xrp = `XRP@${me}`;
-		const xvalue = saldo[xrp];
-		const cost = config.maxfee / xvalue;
 		const assets = Object.keys(saldo);
+		const cost = config.maxfee / saldo[`XRP@${me}`];
 		const stake = assets.length * Math.sqrt(cost);
 		const offers = {};
 
-		assets.forEach(asset => {
-			const value = saldo[asset];
-			let back, forth;
+		assets.forEach(base => {
+			assets.forEach(asset => {
+				const pair = `${asset}/${base}`;
+				const src = saldo[base];
+				const dst = saldo[asset];
+				let offer;
 
-			if (xrp == asset)
-				return;
+				if (asset == base)
+					return;
 
-			back = getoffer(value, xvalue, stake);
-			offers[`${xrp}/${asset}`] = {
-				src: xmm.parse(asset),
-				dst: xmm.parse(xrp),
-				proper: back,
-				active: []
-			};
+				offer = talmud(src, dst, stake);
 
-			forth = getoffer(xvalue, value, stake);
-			offers[`${asset}/${xrp}`] = {
-				src: xmm.parse(xrp),
-				dst: xmm.parse(asset),
-				proper: forth,
-				active: []
-			};
+				offers[pair] = {
+					src: base,
+					dst: asset,
+					proper: offer,
+					active: []
+				};
+			});
 		});
 
 		return offers;
@@ -129,10 +124,12 @@ exports.handler = connect((config, xmm) => {
 					return 1;
 			});
 			const best = top.shift();
+			const src = xmm.parse(entry.src);
+			const dst = xmm.parse(entry.dst);
 			const offer = xmm.parse({
 				type: "offer",
-				base: entry.src.asset,
-				asset: entry.dst.asset,
+				base: src.asset,
+				asset: dst.asset,
 				value: proper.buy,
 				cost: proper.sell,
 				wallet: wallet
