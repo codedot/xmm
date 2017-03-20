@@ -89,6 +89,7 @@ function getsteps(list)
 		const value = parseFloat(line.amount_change);
 		const issuer = line.counterparty;
 		const time = line.executed_time;
+		const type = line.change_type;
 		let asset = line.currency;
 		let entry = acc.current;
 		let delta = entry.delta;
@@ -106,6 +107,7 @@ function getsteps(list)
 
 			delta = {};
 			entry = {
+				fee: 0,
 				iou: 0,
 				delta: delta
 			};
@@ -113,7 +115,10 @@ function getsteps(list)
 			acc.tx = {};
 		}
 
-		if ("exchange" == line.change_type)
+		if ("transaction_cost" == type)
+			entry.fee -= value;
+
+		if ("exchange" == type)
 			acc.tx[asset] = true;
 
 		if (delta[asset])
@@ -128,6 +133,7 @@ function getsteps(list)
 	}, {
 		tx: {},
 		current: {
+			fee: 0,
 			iou: 0,
 			delta: {}
 		},
@@ -144,7 +150,7 @@ function addline(step)
 		date: date.toLocaleDateString(),
 		time: date.toLocaleTimeString(),
 		shares: step.iou.toPrecision(8),
-		value: step.proper.toPrecision(8),
+		fee: step.fee.toFixed(6) + " XRP",
 		growth: step.growth.toFixed(3) + " bp"
 	};
 	const row = template.clone();
@@ -187,6 +193,7 @@ function revert(state, step)
 
 	return {
 		time: step.time,
+		fee: step.fee,
 		delta: delta,
 		iou: iou,
 		price: price,
@@ -505,7 +512,7 @@ $(setup);
 <th id="date">Date</th>
 <th id="time">Time</th>
 <th id="growth">Growth</th>
-<th id="value">Value</th>
+<th id="fee">Fee</th>
 <th id="shares">Shares</th>
 </tr>
 </thead>
@@ -515,7 +522,7 @@ $(setup);
 <td headers="date"></td>
 <td headers="time"></td>
 <td headers="growth"></td>
-<td headers="value"></td>
+<td headers="fee"></td>
 <td headers="shares"></td>
 </tr>
 </tbody>
