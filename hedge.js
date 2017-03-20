@@ -23,6 +23,12 @@ exports.handler = connect((config, xmm) => {
 	const me = id.human;
 	const wallet = id.wallet;
 	const ledger = config.ledger;
+	const cancel = (p, offer) => p.then(() => {
+		return xmm.cancel(offer).then(print);
+	});
+	const create = (p, offer) => p.then(() => {
+		return xmm.create(offer).then(print);
+	});
 
 	Promise.all([
 		xmm.balance(me, ledger),
@@ -36,7 +42,7 @@ exports.handler = connect((config, xmm) => {
 		const bad = [];
 		const absent = [];
 		const far = [];
-		let xrpbal, cost, stake;
+		let xrpbal, cost, stake, script;
 
 		state[0].forEach(line => {
 			const value = line.value;
@@ -123,7 +129,6 @@ exports.handler = connect((config, xmm) => {
 				asset: entry.dst.asset,
 				value: proper.buy,
 				cost: proper.sell,
-				seq: best ? best.seq : 0,
 				wallet: wallet
 			});
 
@@ -131,6 +136,7 @@ exports.handler = connect((config, xmm) => {
 				const good = proper.ratio;
 				const ratio = best.ratio;
 
+				offer.seq = best.seq;
 				offer.old = best.human;
 
 				if (ratio < Math.sqrt(good)) {
@@ -150,22 +156,13 @@ exports.handler = connect((config, xmm) => {
 			}
 		}
 
-		console.info({
-			zombie: zombie.map(offer => offer.human),
-			bad: bad.map(offer => {
-				return {
-					before: offer.old,
-					after: offer.human
-				};
-			}),
-			absent: absent.map(offer => offer.human),
-			far: far.map(offer => {
-				return {
-					before: offer.old,
-					after: offer.human
-				};
-			})
-		});
-		process.exit();
+		script = Promise.resolve();
+		script = zombie.reduce(cancel, script);
+		script = bad.reduce(create, script);
+		script = absent.reduce(create, script);
+		script = far.reduce(create, script);
+		script.then(() => {
+			process.exit();
+		}).catch(abort);
 	}).catch(abort);
 });
