@@ -29,40 +29,13 @@ exports.handler = connect((config, xmm) => {
 	const create = (p, offer) => p.then(() => {
 		return xmm.create(offer).then(print);
 	});
-
-	Promise.all([
-		xmm.balance(me, ledger),
-		xmm.offers(me, ledger)
-	]).then(state => {
-		const saldo = {};
+	const compute = (saldo) => {
 		const xrp = `XRP@${me}`;
+		const xvalue = saldo[xrp];
+		const cost = config.maxfee / xvalue;
+		const assets = Object.keys(saldo);
+		const stake = assets.length * Math.sqrt(cost);
 		const offers = {};
-		const assets = [];
-		const zombie = [];
-		const bad = [];
-		const absent = [];
-		const far = [];
-		let xrpbal, cost, stake, script;
-
-		state[0].forEach(line => {
-			const value = line.value;
-
-			if (value > 0) {
-				const asset = xmm.parse({
-					type: "asset",
-					asset: line.asset,
-					wallet: wallet
-				}).human;
-
-				saldo[asset] = value;
-				assets.push(asset);
-				return true;
-			}
-		});
-
-		xvalue = saldo[xrp];
-		cost = config.maxfee / xvalue;
-		stake = assets.length * Math.sqrt(cost);
 
 		assets.forEach(asset => {
 			const value = saldo[asset];
@@ -87,6 +60,37 @@ exports.handler = connect((config, xmm) => {
 				active: []
 			};
 		});
+
+		return offers;
+	};
+
+	Promise.all([
+		xmm.balance(me, ledger),
+		xmm.offers(me, ledger)
+	]).then(state => {
+		const saldo = {};
+		const zombie = [];
+		const bad = [];
+		const absent = [];
+		const far = [];
+		let offers, script;
+
+		state[0].forEach(line => {
+			const value = line.value;
+
+			if (value > 0) {
+				const asset = xmm.parse({
+					type: "asset",
+					asset: line.asset,
+					wallet: wallet
+				}).human;
+
+				saldo[asset] = value;
+				return true;
+			}
+		});
+
+		offers = compute(saldo);
 
 		state[1].forEach(line => {
 			const src = xmm.parse({
