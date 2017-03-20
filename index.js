@@ -94,7 +94,7 @@ class XMMarg {
 
 	toamount(value, asset) {
 		const obj = {
-			value: value.toString(),
+			value: value.toPrecision(8),
 			currency: asset.code
 		};
 		const issuer = asset.issuer;

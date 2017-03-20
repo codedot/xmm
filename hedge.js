@@ -19,7 +19,9 @@ exports.aliases = [
 ];
 exports.builder = yargs => yargs;
 exports.handler = connect((config, xmm) => {
-	const me = config.me;
+	const id = xmm.parse(config.me);
+	const me = id.human;
+	const wallet = id.wallet;
 	const ledger = config.ledger;
 
 	Promise.all([
@@ -43,7 +45,7 @@ exports.handler = connect((config, xmm) => {
 				const asset = xmm.parse({
 					type: "asset",
 					asset: line.asset,
-					wallet: me
+					wallet: wallet
 				}).human;
 
 				saldo[asset] = value;
@@ -84,12 +86,12 @@ exports.handler = connect((config, xmm) => {
 			const src = xmm.parse({
 				type: "asset",
 				asset: line.base,
-				wallet: me
+				wallet: wallet
 			}).human;
 			const dst = xmm.parse({
 				type: "asset",
 				asset: line.asset,
-				wallet: me
+				wallet: wallet
 			}).human;
 			const pair = offers[`${dst}/${src}`];
 			let ratio = 1;
@@ -122,7 +124,7 @@ exports.handler = connect((config, xmm) => {
 				value: proper.buy,
 				cost: proper.sell,
 				seq: best ? best.seq : 0,
-				wallet: me
+				wallet: wallet
 			});
 
 			if (best) {
