@@ -13,6 +13,46 @@ function talmud(src, dst, stake)
 	};
 }
 
+function decide(entry)
+{
+	const need = entry.need;
+	const proper = entry.proper;
+	const offer = entry.offer;
+	const active = entry.active.sort((a, b) => {
+		if (a.ratio < b.ratio)
+			return -1;
+		else
+			return 1;
+	});
+	const best = active.pop();
+
+	entry.best = best;
+	entry.rest = active;
+
+	if (!best && need)
+		return "absent";
+
+	if (best) {
+		const good = proper.ratio;
+		const ratio = best.ratio;
+
+		offer.ratio = ratio;
+		offer.seq = best.seq;
+		offer.old = best.human;
+
+		if (ratio < Math.sqrt(good)) {
+			if (need)
+				return "bad";
+			else
+				return "zombie";
+		}
+
+		if (ratio > Math.pow(good, 2))
+			if (need)
+				return "far";
+	}
+}
+
 exports.command = "hedge <me>";
 exports.desc = "Apply the Talmud strategy";
 exports.aliases = [
@@ -154,40 +194,21 @@ exports.handler = connect((config, xmm) => {
 
 		for (const pair in offers) {
 			const entry = offers[pair];
-			const proper = entry.proper;
-			const offer = entry.offer;
-			const active = entry.active;
-			const top = active.sort((a, b) => {
-				if (a.ratio > b.ratio)
-					return -1;
-				else
-					return 1;
-			});
-			const best = top.shift();
+			const status = decide(entry);
 
-			if (best) {
-				const good = proper.ratio;
-				const ratio = best.ratio;
+			if ("zombie" == status)
+				zombie.push(entry.best);
 
-				offer.ratio = ratio;
-				offer.seq = best.seq;
-				offer.old = best.human;
+			if ("bad" == status)
+				bad.push(entry.offer);
 
-				if (ratio < Math.sqrt(good)) {
-					offer.status = "bad";
-					bad.push(offer);
-				}
+			if ("absent" == status)
+				absent.push(entry.offer);
 
-				if (ratio > Math.pow(good, 2)) {
-					offer.status = "far";
-					far.push(offer);
-				}
+			if ("far" == status)
+				far.push(entry.offer);
 
-				zombie.push.apply(zombie, top);
-			} else {
-				offer.status = "absent";
-				absent.push(offer);
-			}
+			zombie.push.apply(zombie, entry.rest);
 		}
 
 		script = Promise.resolve();
@@ -198,20 +219,13 @@ exports.handler = connect((config, xmm) => {
 			else
 				return 1;
 		}).reduce(create, script);
-
-		if (zombie.length || bad.length) {
-			script.then(() => {
-				process.exit();
-			}).catch(abort);
-			return;
-		}
-
-		script = absent.concat(far.sort((a, b) => {
+		script = absent.reduce(create, script);
+		script = far.sort((a, b) => {
 			if (a.ratio > b.ratio)
 				return -1;
 			else
 				return 1;
-		})).slice(0, 1).reduce(create, script);
+		}).reduce(create, script);
 		script.then(() => {
 			process.exit();
 		}).catch(abort);
