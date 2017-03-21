@@ -53,6 +53,20 @@ exports.handler = connect((config, xmm) => {
 			offers[`${right}/${left}`].need = true;
 		}
 	};
+	const getoffer = (entry) => {
+		const proper = entry.proper;
+		const src = xmm.parse(entry.src);
+		const dst = xmm.parse(entry.dst);
+
+		return xmm.parse({
+			type: "offer",
+			base: src.asset,
+			asset: dst.asset,
+			value: proper.buy,
+			cost: proper.sell,
+			wallet: wallet
+		});
+	};
 	const compute = (saldo) => {
 		const assets = Object.keys(saldo);
 		const cost = config.maxfee / saldo[`XRP@${me}`];
@@ -64,19 +78,21 @@ exports.handler = connect((config, xmm) => {
 				const pair = `${asset}/${base}`;
 				const src = saldo[base];
 				const dst = saldo[asset];
-				let offer;
+				let proper, offer, entry;
 
 				if (asset == base)
 					return;
 
-				offer = talmud(src, dst, stake);
+				proper = talmud(src, dst, stake);
 
-				offers[pair] = {
+				entry = {
 					src: base,
 					dst: asset,
-					proper: offer,
+					proper: proper,
 					active: []
 				};
+				entry.offer = getoffer(entry);
+				offers[pair] = entry;
 			});
 		});
 
@@ -139,6 +155,7 @@ exports.handler = connect((config, xmm) => {
 		for (const pair in offers) {
 			const entry = offers[pair];
 			const proper = entry.proper;
+			const offer = entry.offer;
 			const active = entry.active;
 			const top = active.sort((a, b) => {
 				if (a.ratio > b.ratio)
@@ -147,16 +164,6 @@ exports.handler = connect((config, xmm) => {
 					return 1;
 			});
 			const best = top.shift();
-			const src = xmm.parse(entry.src);
-			const dst = xmm.parse(entry.dst);
-			const offer = xmm.parse({
-				type: "offer",
-				base: src.asset,
-				asset: dst.asset,
-				value: proper.buy,
-				cost: proper.sell,
-				wallet: wallet
-			});
 
 			if (best) {
 				const good = proper.ratio;
