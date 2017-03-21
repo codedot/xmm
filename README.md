@@ -27,6 +27,7 @@ Options:
   --assets       Dictionary of assets                    [default: {}]
   --count, -n    Number of ledgers to close               [default: 1]
   --cushion, -f  Factor to multiply estimated fee         [default: 1]
+  --hedge        List of assets to trade                 [default: []]
   --ledger, -l   Historical ledger version                    [number]
   --maxfee, -m   The maximum fee to pay             [default: 0.00001]
   --offset, -o   Offset from the current legder           [default: 3]

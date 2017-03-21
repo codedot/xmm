@@ -63,6 +63,11 @@ const opts = {
 		describe: "Factor to multiply estimated fee",
 		default: 1
 	},
+	hedge: {
+		coerce: getobj,
+		describe: "List of assets to trade",
+		default: []
+	},
 	ledger: {
 		alias: "l",
 		describe: "Historical ledger version",
