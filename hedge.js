@@ -31,6 +31,28 @@ exports.handler = connect((config, xmm) => {
 	const create = (p, offer) => p.then(() => {
 		return xmm.create(offer).then(print);
 	});
+	const select = (offers, saldo) => {
+		const assets = config.hedge.map(asset => {
+			asset = `${asset}@${me}`;
+			asset = xmm.parse(asset);
+			return asset.human;
+		}).filter(asset => saldo[asset]);
+		let n = assets.length;
+
+		if (n < 2)
+			return;
+
+		if (n > 2)
+			n = assets.push(assets[0]);
+
+		for (let i = 0; i < n - 1; i++) {
+			const left = assets[i];
+			const right = assets[i + 1];
+
+			offers[`${left}/${right}`].need = true;
+			offers[`${right}/${left}`].need = true;
+		}
+	};
 	const compute = (saldo) => {
 		const assets = Object.keys(saldo);
 		const cost = config.maxfee / saldo[`XRP@${me}`];
@@ -58,6 +80,7 @@ exports.handler = connect((config, xmm) => {
 			});
 		});
 
+		select(offers, saldo);
 		return offers;
 	};
 
