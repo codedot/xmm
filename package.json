@@ -4,7 +4,7 @@
 	"repository": "codedot/xmm",
 	"name": "xmm",
 	"bin": "./xmm.js",
-	"version": "0.2.6",
+	"version": "0.2.7",
 	"license": "MIT",
 	"dependencies": {
 		"ajv": "4.0.5",

@@ -112,8 +112,7 @@ exports.handler = connect((config, xmm) => {
 	};
 	const compute = (saldo) => {
 		const assets = Object.keys(saldo);
-		const cost = config.maxfee / saldo[`XRP@${me}`];
-		const stake = assets.length * Math.sqrt(cost);
+		const stake = config.delta;
 		const offers = {};
 
 		assets.forEach(base => {

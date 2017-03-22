@@ -63,6 +63,11 @@ const opts = {
 		describe: "Factor to multiply estimated fee",
 		default: 1
 	},
+	delta: {
+		alias: "d",
+		describe: "Stake to trade",
+		default: 0.01
+	},
 	hedge: {
 		coerce: getobj,
 		describe: "List of assets to trade",
