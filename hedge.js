@@ -7,6 +7,8 @@ function talmud(src, dst, stake)
 	const ratio = (1 - sell / src) * (1 + buy / dst);
 
 	return {
+		stake: stake,
+		price: buy / sell,
 		sell: sell,
 		buy: buy,
 		ratio: ratio
@@ -33,21 +35,22 @@ function decide(entry)
 		return "absent";
 
 	if (best) {
-		const good = proper.ratio;
 		const ratio = best.ratio;
+		const delta = best.price / proper.price - 1;
 
 		offer.ratio = ratio;
+		offer.delta = delta;
 		offer.seq = best.seq;
 		offer.old = best.human;
 
-		if (ratio < Math.sqrt(good)) {
+		if (ratio < Math.sqrt(proper.ratio)) {
 			if (need)
 				return "bad";
 			else
 				return "zombie";
 		}
 
-		if (ratio > Math.pow(good, 2))
+		if (delta > proper.stake)
 			if (need)
 				return "far";
 	}
@@ -221,7 +224,7 @@ exports.handler = connect((config, xmm) => {
 		}).reduce(create, script);
 		script = absent.reduce(create, script);
 		script = far.sort((a, b) => {
-			if (a.ratio > b.ratio)
+			if (a.delta > b.delta)
 				return -1;
 			else
 				return 1;
