@@ -114,6 +114,13 @@ class XMMarg {
 		return this.toamount(this.value, this.asset);
 	}
 
+	get price() {
+		if ("offer" != this.type)
+			return;
+
+		return this.value / this.cost;
+	}
+
 	get src() {
 		if ("offer" != this.type)
 			return;
