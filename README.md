@@ -28,6 +28,7 @@ Options:
   --count, -n    Number of ledgers to close               [default: 1]
   --cushion, -f  Factor to multiply estimated fee         [default: 1]
   --delta, -d    Stake to trade                        [default: 0.01]
+  --dry, -p      Output script without running               [boolean]
   --hedge        List of pairs to trade                  [default: []]
   --ledger, -l   Historical ledger version                    [number]
   --maxfee, -m   Maximum fee to pay                 [default: 0.00001]

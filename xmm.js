@@ -68,6 +68,11 @@ const opts = {
 		describe: "Stake to trade",
 		default: 0.01
 	},
+	dry: {
+		alias: "p",
+		describe: "Output script without running",
+		boolean: true
+	},
 	hedge: {
 		coerce: getobj,
 		describe: "List of pairs to trade",

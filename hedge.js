@@ -142,6 +142,26 @@ exports.handler = connect((config, xmm) => {
 		select(offers, saldo);
 		return offers;
 	};
+	const dryrun = (zombie, bad, absent, far) => {
+		const drykill = (offer) => {
+			console.info("kill", offer.human);
+		};
+		const dryoffer = (offer) => {
+			console.info("offer", offer.human);
+		};
+
+		console.info("# zombie");
+		zombie.forEach(drykill);
+
+		console.info("# bad");
+		bad.forEach(dryoffer);
+
+		console.info("# absent");
+		absent.forEach(dryoffer);
+
+		console.info("# far");
+		far.forEach(dryoffer);
+	};
 	const sequence = (zombie, bad, absent, far) => {
 		let script = Promise.resolve();
 		let safe;
@@ -229,6 +249,11 @@ exports.handler = connect((config, xmm) => {
 
 		bad.sort((a, b) => a.ratio - b.ratio);
 		far.sort((a, b) => b.delta - a.delta);
+
+		if (config.dry) {
+			dryrun(zombie, bad, absent, far);
+			process.exit();
+		}
 
 		sequence(zombie, bad, absent, far).then(() => {
 			process.exit();

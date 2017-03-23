@@ -141,14 +141,16 @@ class XMMarg {
 
 		switch (this.type) {
 		case "offer":
-			seq = this.seq.toString();
+			seq = this.seq;
+			seq = seq ? seq : 0;
+			seq = seq.toString();
 			str = "~" + seq + str;
-			value = this.cost.toString();
+			value = this.cost.toPrecision(8);
 			str = ":" + value + str;
 			asset = this.tostr(this.base);
 			str = "/" + asset + str;
 		case "value":
-			value = this.value.toString();
+			value = this.value.toPrecision(8);
 			str = ":" + value + str;
 		case "asset":
 			asset = this.tostr(this.asset);
