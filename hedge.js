@@ -79,13 +79,16 @@ exports.handler = connect((config, xmm) => {
 		const pairs = config.hedge.map(pair => {
 			const list = pair.split("/");
 
-			return list.map(asset => {
-				if ("*" == asset)
+			return list.map(assets => {
+				if ("*" == assets)
 					return all;
 
-				asset = `${asset}@${me}`;
-				asset = xmm.parse(asset);
-				return [asset.human];
+				assets = assets.split(",");
+				return assets.map(asset => {
+					asset = `${asset}@${me}`;
+					asset = xmm.parse(asset);
+					return asset.human;
+				});
 			});
 		}).reduce((list, pair) => {
 			const left = pair.shift();
