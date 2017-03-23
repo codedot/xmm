@@ -94,11 +94,15 @@ exports.handler = connect((config, xmm) => {
 				});
 			});
 		}).reduce((list, pair) => {
+			while (pair.length >= 2) {
+				list.push(pair.slice(0, 2));
+				pair.shift();
+			}
+
+			return list;
+		}, []).reduce((list, pair) => {
 			const left = pair.shift();
 			const right = pair.shift();
-
-			if (!left || !right)
-				return list;
 
 			left.forEach(a => {
 				right.forEach(b => {
