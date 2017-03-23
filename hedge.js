@@ -221,13 +221,20 @@ exports.handler = connect((config, xmm) => {
 			else
 				return 1;
 		}).reduce(create, script);
-		script = absent.reduce(create, script);
-		script = far.sort((a, b) => {
+
+		if (zombie.length || bad.length) {
+			script.then(() => {
+				process.exit();
+			}).catch(abort);
+			return;
+		}
+
+		script = absent.concat(far.sort((a, b) => {
 			if (a.delta > b.delta)
 				return -1;
 			else
 				return 1;
-		}).reduce(create, script);
+		})).slice(0, 1).reduce(create, script);
 		script.then(() => {
 			process.exit();
 		}).catch(abort);
