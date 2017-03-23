@@ -75,26 +75,27 @@ exports.handler = connect((config, xmm) => {
 		return xmm.create(offer).then(print);
 	});
 	const select = (offers, saldo) => {
-		const assets = config.hedge.map(asset => {
-			asset = `${asset}@${me}`;
-			asset = xmm.parse(asset);
-			return asset.human;
-		}).filter(asset => saldo[asset]);
-		let n = assets.length;
+		const pairs = config.hedge.map(pair => {
+			const list = pair.split("/");
 
-		if (n < 2)
-			return;
+			return list.map(asset => {
+				asset = `${asset}@${me}`;
+				asset = xmm.parse(asset);
+				return asset.human;
+			});
+		}).reduce((list, pair) => {
+			list.push(pair.join("/"));
+			pair.reverse();
+			list.push(pair.join("/"));
+			return list;
+		}, []);
 
-		if (n > 2)
-			n = assets.push(assets[0]);
+		pairs.forEach(pair => {
+			const offer = offers[pair];
 
-		for (let i = 0; i < n - 1; i++) {
-			const left = assets[i];
-			const right = assets[i + 1];
-
-			offers[`${left}/${right}`].need = true;
-			offers[`${right}/${left}`].need = true;
-		}
+			if (offer)
+				offer.need = true;
+		});
 	};
 	const getoffer = (entry) => {
 		const proper = entry.proper;

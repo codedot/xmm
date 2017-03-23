@@ -70,7 +70,7 @@ const opts = {
 	},
 	hedge: {
 		coerce: getobj,
-		describe: "List of assets to trade",
+		describe: "List of pairs to trade",
 		default: []
 	},
 	ledger: {
@@ -80,7 +80,7 @@ const opts = {
 	},
 	maxfee: {
 		alias: "m",
-		describe: "The maximum fee to pay",
+		describe: "Maximum fee to pay",
 		default: 1e-5
 	},
 	offset: {
