@@ -75,18 +75,31 @@ exports.handler = connect((config, xmm) => {
 		return xmm.create(offer).then(print);
 	});
 	const select = (offers, saldo) => {
+		const all = Object.keys(saldo);
 		const pairs = config.hedge.map(pair => {
 			const list = pair.split("/");
 
 			return list.map(asset => {
+				if ("*" == asset)
+					return all;
+
 				asset = `${asset}@${me}`;
 				asset = xmm.parse(asset);
-				return asset.human;
+				return [asset.human];
 			});
 		}).reduce((list, pair) => {
-			list.push(pair.join("/"));
-			pair.reverse();
-			list.push(pair.join("/"));
+			const left = pair.shift();
+			const right = pair.shift();
+
+			if (!left || !right)
+				return list;
+
+			left.forEach(a => {
+				right.forEach(b => {
+					list.push(`${a}/${b}`);
+					list.push(`${b}/${a}`);
+				});
+			});
 			return list;
 		}, []);
 
