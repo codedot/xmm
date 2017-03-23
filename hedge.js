@@ -79,6 +79,9 @@ exports.handler = connect((config, xmm) => {
 		const pairs = config.hedge.map(pair => {
 			const list = pair.split("/");
 
+			if (1 == list.length)
+				list.push(list[0]);
+
 			return list.map(assets => {
 				if ("*" == assets)
 					return all;
