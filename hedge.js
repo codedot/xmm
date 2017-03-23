@@ -142,6 +142,19 @@ exports.handler = connect((config, xmm) => {
 		select(offers, saldo);
 		return offers;
 	};
+	const sequence = (zombie, bad, absent, far) => {
+		let script = Promise.resolve();
+		let safe;
+
+		script = zombie.reduce(cancel, script);
+		script = bad.reduce(create, script);
+
+		if (zombie.length || bad.length)
+			return script;
+
+		safe = absent.concat(far).slice(0, 1);
+		return safe.reduce(create, script);
+	};
 
 	Promise.all([
 		xmm.balance(me, ledger),
@@ -152,7 +165,7 @@ exports.handler = connect((config, xmm) => {
 		const bad = [];
 		const absent = [];
 		const far = [];
-		let offers, script;
+		let offers;
 
 		state[0].forEach(line => {
 			const value = line.value;
@@ -214,29 +227,10 @@ exports.handler = connect((config, xmm) => {
 			zombie.push.apply(zombie, entry.rest);
 		}
 
-		script = Promise.resolve();
-		script = zombie.reduce(cancel, script);
-		script = bad.sort((a, b) => {
-			if (a.ratio < b.ratio)
-				return -1;
-			else
-				return 1;
-		}).reduce(create, script);
+		bad.sort((a, b) => a.ratio - b.ratio);
+		far.sort((a, b) => b.delta - a.delta);
 
-		if (zombie.length || bad.length) {
-			script.then(() => {
-				process.exit();
-			}).catch(abort);
-			return;
-		}
-
-		script = absent.concat(far.sort((a, b) => {
-			if (a.delta > b.delta)
-				return -1;
-			else
-				return 1;
-		})).slice(0, 1).reduce(create, script);
-		script.then(() => {
+		sequence(zombie, bad, absent, far).then(() => {
 			process.exit();
 		}).catch(abort);
 	}).catch(abort);
