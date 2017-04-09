@@ -170,20 +170,27 @@ function addline(step)
 	output.append(row);
 }
 
+function getprice(balance, iou)
+{
+	const nassets = Object.keys(balance).length;
+	const factor = nassets / iou;
+	const price = {};
+
+	for (const asset in balance)
+		price[asset] = balance[asset] * factor;
+
+	return price;
+}
+
 function revert(state, step)
 {
 	const balance = Object.assign({}, state.balance);
 	const delta = step.delta;
 	const shares = state.iou;
 	const iou = shares + step.iou;
-	const nassets = Object.keys(balance).length;
-	const factor = nassets / shares;
 	const proper = state.value;
-	const price = {};
+	const price = getprice(balance, shares);
 	let value, growth;
-
-	for (const asset in balance)
-		price[asset] = balance[asset] * factor;
 
 	for (const asset in delta)
 		if (balance[asset])
