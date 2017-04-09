@@ -149,7 +149,7 @@ function addline(step)
 	const data = {
 		date: date.toLocaleDateString(),
 		time: date.toLocaleTimeString(),
-		shares: step.iou.toPrecision(8),
+		shares: step.shares.toPrecision(8),
 		fee: step.fee.toFixed(6) + " XRP",
 		growth: step.growth.toFixed(3) + " bp"
 	};
@@ -174,19 +174,20 @@ function revert(state, step)
 {
 	const balance = Object.assign({}, state.balance);
 	const delta = step.delta;
-	const iou = state.iou - step.iou;
+	const shares = state.iou;
+	const iou = shares + step.iou;
 	const nassets = Object.keys(balance).length;
-	const factor = nassets / iou;
+	const factor = nassets / shares;
 	const proper = state.value;
 	const price = {};
 	let value, growth;
 
+	for (const asset in balance)
+		price[asset] = balance[asset] * factor;
+
 	for (const asset in delta)
 		if (balance[asset])
 			balance[asset] -= delta[asset];
-
-	for (const asset in balance)
-		price[asset] = balance[asset] * factor;
 
 	value = getvalue(balance, iou);
 	growth = 1e4 * (proper / value - 1);
@@ -195,6 +196,7 @@ function revert(state, step)
 		time: step.time,
 		fee: step.fee,
 		delta: delta,
+		shares: shares,
 		iou: iou,
 		price: price,
 		balance: balance,
