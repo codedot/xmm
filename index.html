@@ -178,9 +178,20 @@ function revert(state, step)
 	const iou = shares + step.iou;
 	let price, ratio, growth;
 
-	for (const asset in delta)
-		if (balance[asset])
-			balance[asset] -= delta[asset];
+	for (const asset in delta) {
+		const change = delta[asset];
+		let value = balance[asset];
+
+		if (value)
+			value -= change;
+		else
+			value = -change;
+
+		if (value > 1e-6)
+			balance[asset] = value;
+		else
+			delete balance[asset];
+	}
 
 	price = getprice(balance, iou);
 	ratio = compare(price, proper);
@@ -230,6 +241,7 @@ function show(start, state, steps)
 	const ratio = compare(start.price, state.price);
 	const period = t1 - date.getTime();
 	const log = [];
+	const assets = {};
 	let profit = 0;
 	let interest, freq, rate;
 
@@ -239,6 +251,8 @@ function show(start, state, steps)
 		profit += step.growth;
 
 		addline(step);
+
+		Object.assign(assets, step.proper);
 
 		log.unshift(step);
 
@@ -267,12 +281,11 @@ function show(start, state, steps)
 
 	$("#view").show();
 
-	draw(log);
+	draw(log, Object.keys(assets));
 }
 
-function draw(log)
+function draw(log, assets)
 {
-	const assets = Object.keys(log[0].proper);
 	const pdata = [];
 	const gdata = [];
 	const series = [{
@@ -321,6 +334,9 @@ function draw(log)
 
 		assets.forEach((asset, i) => {
 			const value = price[asset];
+
+			if (!value)
+				return;
 
 			pdata[i].push([time, value]);
 		});
