@@ -41,19 +41,6 @@ function request(action, param)
 	});
 }
 
-function getvalue(balance, iou)
-{
-	let p = 1;
-	let n = 0;
-
-	for (const asset in balance) {
-		p *= balance[asset];
-		++n;
-	}
-
-	return Math.pow(p, 1 / n) / iou;
-}
-
 function getstate(list)
 {
 	const dict = list.reduce((acc, line) => {
@@ -78,7 +65,7 @@ function getstate(list)
 		balance: {}
 	});
 
-	dict.value = getvalue(dict.balance, dict.iou);
+	dict.price = getprice(dict.balance, dict.iou);
 	return dict;
 }
 
@@ -186,18 +173,18 @@ function revert(state, step)
 {
 	const balance = Object.assign({}, state.balance);
 	const delta = step.delta;
+	const proper = state.price;
 	const shares = state.iou;
 	const iou = shares + step.iou;
-	const proper = state.value;
-	const price = getprice(balance, shares);
-	let value, growth;
+	let price, ratio, growth;
 
 	for (const asset in delta)
 		if (balance[asset])
 			balance[asset] -= delta[asset];
 
-	value = getvalue(balance, iou);
-	growth = 1e4 * (proper / value - 1);
+	price = getprice(balance, iou);
+	ratio = compare(price, proper);
+	growth = 1e4 * (ratio - 1);
 
 	return {
 		time: step.time,
@@ -205,12 +192,29 @@ function revert(state, step)
 		delta: delta,
 		shares: shares,
 		iou: iou,
+		proper: proper,
 		price: price,
 		balance: balance,
-		value: value,
-		proper: proper,
 		growth: growth
 	};
+}
+
+function compare(src, dst)
+{
+	let nassets = 0;
+	let ratio = 1;
+
+	for (const asset in dst) {
+		const after = dst[asset];
+		const before = src[asset];
+
+		if (before) {
+			ratio *= after / before;
+			++nassets;
+		}
+	}
+
+	return Math.pow(ratio, 1 / nassets);
 }
 
 function show(start, state, steps)
@@ -223,7 +227,7 @@ function show(start, state, steps)
 	const year = 365.25 * 24 * hour;
 	const nhrs = (t1 - t0) / hour;
 	const date = new Date(origin);
-	const ratio = state.value / start.value;
+	const ratio = compare(start.price, state.price);
 	const period = t1 - date.getTime();
 	const log = [];
 	let profit = 0;
@@ -263,14 +267,12 @@ function show(start, state, steps)
 
 	$("#view").show();
 
-	console.info(log);
-
 	draw(log);
 }
 
 function draw(log)
 {
-	const assets = Object.keys(log[0].price);
+	const assets = Object.keys(log[0].proper);
 	const pdata = [];
 	const gdata = [];
 	const series = [{
@@ -313,7 +315,7 @@ function draw(log)
 
 	log.forEach(entry => {
 		const time = Date.parse(entry.time);
-		const price = entry.price;
+		const price = entry.proper;
 
 		gdata.push([time, entry.growth]);
 
