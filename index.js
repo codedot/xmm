@@ -559,6 +559,7 @@ class XMM {
 
 		amount = dst.amount;
 		amount.limit = amount.value;
+		amount.ripplingDisabled = true;
 		delete amount.value;
 
 		return this.make("Trustline", dst, amount);
