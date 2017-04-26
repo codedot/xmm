@@ -1,6 +1,6 @@
 This package encapsulates [RippleAPI][2], providing both CLI and API,
 and implements an automated multi-currency market maker for
-[the Ripple network][1] using the Talmud strategy.
+[the Ripple network][1] using [the Talmud strategy][4].
 
 # CLI
 
@@ -58,6 +58,7 @@ already connected to a server and after a ledger has been closed.
 [1]: https://ripple.com/
 [2]: https://ripple.com/build/rippleapi/
 [3]: https://ripple.com/build/ripple-test-net/
+[4]: https://github.com/codedot/xmm/wiki
 
 # License
 
