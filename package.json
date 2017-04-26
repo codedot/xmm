@@ -8,8 +8,8 @@
 	"license": "MIT",
 	"dependencies": {
 		"ajv": "4.0.5",
-		"ripple-lib": "0.17.4",
-		"yargs": "7.0.2",
+		"ripple-lib": "0.17.6",
+		"yargs": "7.1.0",
 		"request": "2.75.0"
 	}
 }
