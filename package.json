@@ -4,11 +4,10 @@
 	"repository": "codedot/xmm",
 	"name": "xmm",
 	"bin": "./xmm.js",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"license": "MIT",
 	"dependencies": {
-		"ajv": "4.0.5",
-		"ripple-lib": "0.17.6",
+		"ripple-lib": "0.17.7",
 		"yargs": "7.1.0",
 		"request": "2.75.0"
 	}
