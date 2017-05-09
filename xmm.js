@@ -161,3 +161,5 @@ require("yargs")
 	.wrap(70)
 	.fail(abort)
 	.argv;
+
+setTimeout(abort.bind(this, "Stalled"), 6e4);
