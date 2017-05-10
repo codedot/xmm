@@ -568,9 +568,7 @@ class XMM {
 
 exports.connect = config => new Promise((resolve, reject) => {
 	const ripple = require("ripple-lib");
-	const timeout = config.timeout * 1e3;
 	const api = new ripple.RippleAPI({
-		timeout: timeout,
 		feeCushion: config.cushion,
 		server: config.server
 	});
@@ -595,11 +593,6 @@ exports.connect = config => new Promise((resolve, reject) => {
 			resolve(xmm);
 		}
 	}
-
-	setTimeout(() => {
-		if (!api.isConnected())
-			reject("Timed out");
-	}, timeout);
 
 	tick();
 	api.connect();

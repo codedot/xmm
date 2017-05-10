@@ -30,6 +30,10 @@ global.print = tx => {
 };
 
 global.connect = callback => config => {
+	setTimeout(() => {
+		abort("Timed out");
+	}, config.timeout * 1e3);
+
 	if (!config.yes)
 		config.yes = ask;
 
@@ -100,8 +104,8 @@ const opts = {
 	},
 	timeout: {
 		alias: "t",
-		describe: "Timeout in seconds for requests",
-		default: 10
+		describe: "Timeout in seconds",
+		default: 60
 	},
 	wallets: {
 		coerce: getobj,
@@ -161,5 +165,3 @@ require("yargs")
 	.wrap(70)
 	.fail(abort)
 	.argv;
-
-setTimeout(abort.bind(this, "Stalled"), 6e4);

@@ -34,7 +34,7 @@ Options:
   --maxfee, -m   Maximum fee to pay                 [default: 0.00001]
   --offset, -o   Offset from the current legder           [default: 3]
   --server, -s   WebSocket server     [default: "wss://s1.ripple.com"]
-  --timeout, -t  Timeout in seconds for requests         [default: 10]
+  --timeout, -t  Timeout in seconds                      [default: 60]
   --wallets      Dictionary of wallets                   [default: {}]
   --yes, -y      Do not ask for confirmation                 [boolean]
   --config, -c   Path to JSON config file       [default: ~/.xmm.json]
