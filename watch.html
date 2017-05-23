@@ -1,0 +1,442 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Offers</title>
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.css"
+	rel="stylesheet">
+
+<style>
+table {
+	table-layout: fixed;
+}
+
+.update {
+	text-shadow: 0px 0px 1px;
+}
+</style>
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="lib.js"></script>
+
+<script>
+var host = localStorage.watchws;
+var servers = [
+	"wss://s1.ripple.com:443",
+	"wss://s-east.ripple.com:443",
+	"wss://s-west.ripple.com:443"
+];
+var options = {
+	servers: host ? servers.concat([
+		host
+	]) : servers,
+	trusted: false
+};
+var remote = new ripple.Remote(options);
+var id = location.search.replace("?", "");
+var account = remote.account(id);
+var pairs = {};
+var units = {};
+var template = {};
+var pending = true;
+var ready = false;
+var ledger, saldo, offers, table, header, state;
+
+function start()
+{
+	state.addClass("info");
+	remote.once("ledger_closed", getsaldo);
+}
+
+function getsaldo(data)
+{
+	ledger = data.ledger_index;
+	if (!ledger) {
+		console.error("Failed to get ledger");
+		return start();
+	}
+
+	remote.request_account_balance({
+		account: id,
+		ledger: ledger
+	}, setxrp);
+}
+
+function setxrp(error, response)
+{
+	if (error) {
+		console.error("Failed to get balance");
+		return start();
+	}
+
+	saldo = {};
+
+	saldo["XRP"] = response.to_number() / 1e6;
+
+	remote.request_account_lines({
+		account: id,
+		ledger: ledger
+	}, setlines);
+}
+
+function setlines(error, response)
+{
+	var lines, i, unit;
+
+	if (error) {
+		console.error("Failed to get lines");
+		return start();
+	}
+
+	lines = response.lines;
+	for (i = 0; i < lines.length; i++) {
+		var line = lines[i];
+		var balance = parseFloat(line.balance);
+		var unit = line.currency + ":" + line.account;
+
+		if (balance > 0)
+			saldo[unit] = balance;
+	}
+
+	remote.request_account_offers({
+		account: id,
+		ledger: ledger
+	}, update);
+}
+
+function update(error, response)
+{
+	var list, i;
+
+	function getunit(amount)
+	{
+		var currency, issuer;
+
+		if ("string" == typeof amount)
+			return "XRP";
+
+		currency = amount.currency;
+		issuer = amount.issuer;
+		return currency + ":" + issuer;
+	}
+
+	function getvalue(amount)
+	{
+		if ("object" == typeof amount)
+			return parseFloat(amount.value);
+		else
+			return parseFloat(amount) / 1e6;
+	}
+
+	if (error) {
+		console.error("Failed to get offers");
+		return start();
+	}
+
+	offers = {};
+
+	list = response.offers;
+	for (i = 0; i < list.length; i++) {
+		var offer = list[i];
+		var src = offer.taker_gets;
+		var dst = offer.taker_pays;
+		var base = getunit(src);
+		var counter = getunit(dst);
+		var pair = base + ">" + counter;
+
+		offers[pair] = {
+			seq: offer.seq,
+			src: getvalue(src),
+			dst: getvalue(dst),
+			dup: offers[pair]
+		};
+	}
+
+	show();
+}
+
+function addunit(unit)
+{
+	var src, dst;
+
+	if (units[unit])
+		return;
+
+	src = template.row.clone();
+	dst = template.header.clone();
+	dst.text(unit.replace(/^(...:....).*$/, "$1\u2026"));
+	header.append(dst);
+	src.append(dst.clone());
+	table.append(src);
+
+	for (dst in units) {
+		var cell = template.cell.clone();
+		var pair = unit + ">" + dst;
+
+		src.append(cell);
+		pairs[pair] = cell;
+	}
+
+	units[unit] = src;
+	for (src in units) {
+		var cell = template.cell.clone();
+		var pair = src + ">" + unit;
+
+		units[src].append(cell);
+		pairs[pair] = cell;
+	}
+}
+
+function ispair(pair)
+{
+	var src = {};
+	var dst = {};
+	var base, counter;
+
+	pair = pair.split(">");
+	base = pair.shift();
+	counter = pair.shift();
+
+	src.unit = base;
+	base = base.split(":");
+	src.currency = base.shift();
+	src.issuer = base.shift();
+
+	dst.unit = counter;
+	counter = counter.split(":");
+	dst.currency = counter.shift();
+	dst.issuer = counter.shift();
+
+	if (src.unit == dst.unit)
+		return false;
+
+	if (id == src.issuer)
+		return false;
+	if (id == dst.issuer)
+		return false;
+
+	return true;
+}
+
+function appear()
+{
+	var cell = $(this);
+
+	cell.removeClass();
+	cell.addClass(cell.data("class"));
+	cell.text(cell.data("update"));
+	cell.fadeIn();
+}
+
+function replace(cell)
+{
+	var src = cell.text();
+	var dst = cell.data("update");
+
+	if (src == dst)
+		return;
+
+	if (src)
+		cell.addClass("update").delay(2e3).fadeOut(appear);
+	else
+		appear.call(cell);
+}
+
+function show()
+{
+	var date = new Date();
+	var nassets = 0;
+	var unit, pair;
+
+	function diff(offer, pair)
+	{
+		var p0, p1, base, counter;
+
+		if (!offer)
+			return 0;
+
+		pair = pair.split(">");
+		base = pair.shift();
+		base = saldo[base];
+		counter = pair.shift();
+		counter = saldo[counter];
+
+		p0 = base / counter;
+		if (base < 0)
+			p0 /= -nassets;
+		else if (counter < 0)
+			p0 *= -nassets;
+
+		p1 = offer.src / offer.dst;
+		return Math.abs(p1 - p0) / p0;
+	}
+
+	function profit(offer, pair)
+	{
+		var src, dst, base, counter, v0, v1;
+
+		if (!offer)
+			return 0;
+
+		src = offer.src;
+		dst = offer.dst;
+		pair = pair.split(">");
+		base = pair.shift();
+		base = saldo[base];
+		counter = pair.shift();
+		counter = saldo[counter];
+
+		if (base < 0)
+			src *= -nassets;
+
+		if (counter < 0)
+			dst *= -nassets;
+
+		v0 = base * counter;
+		v1 = (base - src) * (counter + dst);
+
+		return Math.pow(v1 / v0, 1 / nassets) - 1;
+	}
+
+	for (unit in saldo) {
+		var balance = saldo[unit];
+		var cell, prev, change;
+
+		addunit(unit);
+
+		if (0 < balance)
+			++nassets;
+
+		cell = pairs[unit + ">" + unit];
+		prev = parseFloat(cell.data("balance"));
+
+		if (balance == prev)
+			continue;
+
+		cell.data("balance", balance);
+
+		if (prev < balance) {
+			cell.data("class", "text-success");
+			change = "\u25B2";
+		} else if (balance < prev) {
+			cell.data("class", "text-danger");
+			change = "\u25BC";
+		} else {
+			cell.data("class", "text-warning");
+			change = "\u25CF";
+		}
+
+		cell.data("update", change + " " + balance.toPrecision(6));
+		replace(cell);
+	}
+
+	for (pair in pairs) {
+		var offer = offers[pair];
+		var growth = 1e4 * profit(offer, pair);
+		var delta = 1e2 * diff(offer, pair);
+		var cell = pairs[pair];
+		var seq = offer ? offer.seq : 0;
+		var prev = parseInt(cell.data("seq"));
+
+		if (!ispair(pair))
+			continue;
+
+		cell.data("seq", seq);
+
+		if (prev < seq)
+			cell.data("class", "info");
+		else if (0 < growth)
+			cell.data("class", "success");
+		else if (growth < 0)
+			cell.data("class", "danger");
+		else
+			cell.data("class", "warning");
+
+		growth = growth.toFixed(3) + "\u2031";
+		delta = "(" + delta.toFixed(1) + "%)";
+
+		cell.data("update", growth + " " + delta);
+		replace(cell);
+	}
+
+	state.removeClass();
+	state.data("time", date.getTime());
+	table.removeClass("hidden");
+
+	listen();
+}
+
+function request()
+{
+	if (!ready) {
+		pending = true;
+		return;
+	}
+
+	ready = false;
+	pending = false;
+	start();
+}
+
+function listen()
+{
+	ready = true;
+
+	if (pending)
+		request();
+}
+
+function tick()
+{
+	var date = new Date();
+	var last = state.data("time");
+
+	if (last) {
+		var since = date.getTime() - last;
+
+		since = new Date(since);
+		since = since.toISOString();
+		since = since.replace(/^.*T(..:..:..).*$/, "$1");
+		state.text(since);
+	}
+}
+
+function main()
+{
+	$("h1").text(id);
+
+	table = $("table");
+	header = $("tr");
+	state = $("td");
+	state.click(request);
+
+	template.header = header.children("th").detach();
+	template.row = header.clone();
+	template.cell = template.row.children("td").detach();
+
+	setInterval(tick, 1e3);
+	account.on("transaction", request);
+	remote.connect(listen);
+}
+
+$(main);
+</script>
+</head>
+
+<body>
+<div class="container-fluid">
+<div class="text-center"><h1></h1></div>
+
+<p>
+<table class="table table-bordered text-center hidden">
+<tr>
+<td></td>
+<th class="text-center">XRP</th>
+</tr>
+</table>
+</p>
+</div>
+</body>
+</html>
