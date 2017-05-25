@@ -24,6 +24,29 @@ const saldo = {
 	xrp: 0
 };
 
+const book = {
+	btcusd: {
+		counter: "btc",
+		base: "usd"
+	},
+	btceur: {
+		counter: "btc",
+		base: "eur"
+	},
+	xrpusd: {
+		counter: "xrp",
+		base: "usd"
+	},
+	xrpeur: {
+		counter: "xrp",
+		base: "eur"
+	},
+	xrpbtc: {
+		counter: "xrp",
+		base: "btc"
+	}
+};
+
 function abort(reason)
 {
 	console.error(reason);
@@ -37,9 +60,16 @@ api.balance().then(data => {
 		saldo[asset] = parseFloat(value);
 	}
 
+	for (const pair in book) {
+		const fee = data[`${pair}_fee`];
+
+		book[pair].fee = parseFloat(fee) / 100;
+	}
+
 	console.info(saldo);
 
 	return api.open_orders("all");
 }).then(data => {
-	console.info(data);
+	console.log(data);
+	console.info(book);
 }).catch(abort);
