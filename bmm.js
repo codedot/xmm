@@ -72,4 +72,9 @@ api.balance().then(data => {
 }).then(data => {
 	console.log(data);
 	console.info(book);
+	process.exit();
 }).catch(abort);
+
+setTimeout(() => {
+	abort("Timed out");
+}, 1e4);
