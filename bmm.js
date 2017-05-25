@@ -70,6 +70,19 @@ function abort(reason)
 	process.exit(1);
 }
 
+for (const pair in book) {
+	const entry = book[pair];
+
+	entry.ask = {
+		proper: {},
+		active: []
+	};
+	entry.bid = {
+		proper: {},
+		active: []
+	};
+}
+
 api.balance().then(data => {
 	for (const asset in saldo) {
 		const value = data[`${asset}_balance`];
