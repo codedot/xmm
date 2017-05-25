@@ -9,8 +9,22 @@ const secret = env.BITSTAMP_SECRET;
 const id = env.BITSTAMP_ID;
 const api = new Bitstamp(key, secret, id);
 
+const opts = {
+	delta: {
+		alias: "d",
+		describe: "Stake to trade",
+		default: 0.01
+	},
+	timeout: {
+		alias: "t",
+		describe: "Timeout in seconds",
+		default: 30
+	},
+};
+
 const argv = require("yargs")
 	.usage("Usage: $0 [options]")
+	.options(opts)
 	.strict()
 	.help()
 	.alias("help", "h")
@@ -125,4 +139,4 @@ api.balance().then(data => {
 
 setTimeout(() => {
 	abort("Timed out");
-}, 1e4);
+}, argv.timeout * 1e3);
