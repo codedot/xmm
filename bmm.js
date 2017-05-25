@@ -17,6 +17,13 @@ const argv = require("yargs")
 	.wrap(50)
 	.argv;
 
+const prec = {
+	usd: 2,
+	eur: 2,
+	btc: 8,
+	xrp: 6
+};
+
 const saldo = {
 	usd: 0,
 	eur: 0,
@@ -26,22 +33,32 @@ const saldo = {
 
 const book = {
 	btcusd: {
+		prec: 2,
 		counter: "btc",
 		base: "usd"
 	},
 	btceur: {
+		prec: 2,
 		counter: "btc",
 		base: "eur"
 	},
+	eurusd: {
+		prec: 5,
+		counter: "eur",
+		base: "usd"
+	},
 	xrpusd: {
+		prec: 5,
 		counter: "xrp",
 		base: "usd"
 	},
 	xrpeur: {
+		prec: 5,
 		counter: "xrp",
 		base: "eur"
 	},
 	xrpbtc: {
+		prec: 8,
 		counter: "xrp",
 		base: "btc"
 	}
