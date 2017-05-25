@@ -18,10 +18,16 @@ const argv = require("yargs")
 	.argv;
 
 const prec = {
+	btcusd: 2,
+	btceur: 2,
+	eurusd: 5,
+	xrpusd: 5,
+	xrpeur: 5,
+	xrpbtc: 8,
 	usd: 2,
 	eur: 2,
 	btc: 8,
-	xrp: 6
+	xrp: 8
 };
 
 const saldo = {
@@ -33,32 +39,26 @@ const saldo = {
 
 const book = {
 	btcusd: {
-		prec: 2,
 		counter: "btc",
 		base: "usd"
 	},
 	btceur: {
-		prec: 2,
 		counter: "btc",
 		base: "eur"
 	},
 	eurusd: {
-		prec: 5,
 		counter: "eur",
 		base: "usd"
 	},
 	xrpusd: {
-		prec: 5,
 		counter: "xrp",
 		base: "usd"
 	},
 	xrpeur: {
-		prec: 5,
 		counter: "xrp",
 		base: "eur"
 	},
 	xrpbtc: {
-		prec: 8,
 		counter: "xrp",
 		base: "btc"
 	}
@@ -96,12 +96,30 @@ api.balance().then(data => {
 		book[pair].fee = parseFloat(fee) / 100;
 	}
 
-	console.info(saldo);
-
 	return api.open_orders("all");
 }).then(data => {
-	console.log(data);
-	console.info(book);
+	data.forEach(line => {
+		const pair = line.currency_pair
+			.split("/")
+			.map(asset => asset.toLowerCase())
+			.join("");
+
+		if ("1" == line.type)
+			book[pair].ask.active.push(line);
+		else
+			book[pair].bid.active.push(line);
+
+		line.price = parseFloat(line.price);
+		line.amount = parseFloat(line.amount);
+		delete line.type;
+		delete line.currency_pair;
+		delete line.datetime;
+	});
+
+	console.info(JSON.stringify({
+		saldo: saldo,
+		book: book
+	}, null, "\t"));
 	process.exit();
 }).catch(abort);
 
