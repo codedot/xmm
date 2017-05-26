@@ -31,6 +31,8 @@ const argv = require("yargs")
 	.wrap(50)
 	.argv;
 
+const stake = argv.delta;
+
 const prec = {
 	btcusd: 2,
 	btceur: 2,
@@ -84,16 +86,22 @@ function abort(reason)
 	process.exit(1);
 }
 
-for (const pair in book) {
+function talmud(pair, dir)
+{
 	const entry = book[pair];
+	const fee = entry.fee;
+	const counter = saldo[entry.counter];
+	const base = saldo[entry.base];
+	const coef = 1 + 2 * dir * stake - stake * fee;
+	const amount = stake * counter / coef;
+	const price = coef * base / counter;
 
-	entry.ask = {
-		proper: {},
-		active: []
-	};
-	entry.bid = {
-		proper: {},
-		active: []
+	if (!base || !counter)
+		return;
+
+	return {
+		price: price,
+		amount: amount
 	};
 }
 
@@ -105,9 +113,19 @@ api.balance().then(data => {
 	}
 
 	for (const pair in book) {
+		const entry = book[pair];
 		const fee = data[`${pair}_fee`];
 
-		book[pair].fee = parseFloat(fee) / 100;
+		entry.fee = parseFloat(fee) / 100;
+
+		entry.ask = {
+			proper: talmud(pair, 1),
+			active: []
+		};
+		entry.bid = {
+			proper: talmud(pair, -1),
+			active: []
+		};
 	}
 
 	return api.open_orders("all");
