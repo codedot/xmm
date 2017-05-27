@@ -31,7 +31,7 @@ const argv = require("yargs")
 	.wrap(50)
 	.argv;
 
-const stake = argv.delta;
+const delta = argv.delta;
 
 const prec = {
 	btcusd: 2,
@@ -80,6 +80,11 @@ const book = {
 	}
 };
 
+const script = {
+	cancel: [],
+	create: []
+};
+
 function abort(reason)
 {
 	console.error(reason);
@@ -114,11 +119,11 @@ function talmud(pair, type)
 	const fee = entry.fee;
 	const counter = saldo[entry.counter];
 	const base = saldo[entry.base];
-	const coef = 1 + 2 * sign * stake - stake * fee;
+	const coef = 1 + 2 * sign * delta - delta * fee;
 	const order = {
 		pair: pair,
 		type: type,
-		amount: stake * counter / coef,
+		amount: delta * counter / coef,
 		price: coef * base / counter
 	};
 
@@ -127,6 +132,67 @@ function talmud(pair, type)
 
 	order.ratio = estimate(order);
 	return order;
+}
+
+function decide(dir)
+{
+	const proper = dir.proper;
+	const active = dir.active.slice().sort((a, b) => {
+		if (a.ratio < b.ratio)
+			return -1;
+		else
+			return 1;
+	});
+	const best = active.pop();
+
+	if (!proper)
+		return;
+
+	active.forEach(cancel);
+
+	if (best)
+		replace(best, proper);
+	else
+		create(proper);
+}
+
+function diff(x, ref)
+{
+	if (!x)
+		return 1;
+
+	return Math.abs(x - ref) / ref;
+}
+
+function isbad(order, proper)
+{
+	if (diff(order.ratio, proper.ratio) > delta)
+		return true;
+
+	if (diff(order.price, proper.price) > delta)
+		return true;
+
+	return false;
+}
+
+function replace(active, proper)
+{
+	if (isbad(active, proper)) {
+		cancel(active);
+		create(proper);
+	}
+}
+
+function create(order)
+{
+	order.action = "create";
+	script.create.push(order);
+}
+
+function cancel(order)
+{
+	order.action = "cancel";
+	script.cancel.push(order);
 }
 
 api.balance().then(data => {
@@ -173,9 +239,17 @@ api.balance().then(data => {
 		entry[type].active.push(line);
 	});
 
+	for (const pair in book) {
+		const entry = book[pair];
+
+		decide(entry.ask);
+		decide(entry.bid);
+	}
+
 	console.info(JSON.stringify({
 		saldo: saldo,
-		book: book
+		book: book,
+		script: script
 	}, null, "\t"));
 	process.exit();
 }).catch(abort);
