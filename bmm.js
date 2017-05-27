@@ -10,6 +10,11 @@ const id = env.BITSTAMP_ID;
 const api = new Bitstamp(key, secret, id);
 
 const opts = {
+	cancel: {
+		alias: "c",
+		describe: "Cancel all orders",
+		type: "boolean"
+	},
 	delta: {
 		alias: "d",
 		describe: "Stake to trade",
@@ -20,6 +25,11 @@ const opts = {
 		describe: "Timeout in seconds",
 		default: 30
 	},
+	update: {
+		alias: "u",
+		describe: "Update orders",
+		type: "boolean"
+	}
 };
 
 const argv = require("yargs")
@@ -195,6 +205,11 @@ function cancel(order)
 	script.cancel.push(order);
 }
 
+function sequence()
+{
+	return Promise.resolve();
+}
+
 api.balance().then(data => {
 	for (const asset in saldo) {
 		const value = data[`${asset}_balance`];
@@ -251,6 +266,14 @@ api.balance().then(data => {
 		book: book,
 		script: script
 	}, null, "\t"));
+
+	if (argv.cancel)
+		return api.cancel_all_orders();
+	else if (argv.update)
+		return sequence();
+	else
+		return Promise.resolve();
+}).then(() => {
 	process.exit();
 }).catch(abort);
 
