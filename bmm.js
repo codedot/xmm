@@ -207,7 +207,25 @@ function cancel(order)
 
 function sequence()
 {
-	return Promise.resolve();
+	const kill = (acc, order) => acc.then(() => {
+		return api.cancel_order(order.id);
+	});
+	const open = (acc, order) => acc.then(() => {
+		const pair = order.pair;
+		const amount = order.amount;
+		const price = order.price;
+
+		if ("ask" == order.type)
+			return api.sell(pair, amount, price);
+		else
+			return api.buy(pair, amount, price);
+	});
+	let p = Promise.resolve();
+
+	p = script.cancel.reduce(kill, p);
+	p = script.create.reduce(open, p);
+
+	return p;
 }
 
 api.balance().then(data => {
