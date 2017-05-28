@@ -43,19 +43,6 @@ const argv = require("yargs")
 
 const delta = argv.delta;
 
-const prec = {
-	btcusd: 2,
-	btceur: 2,
-	eurusd: 5,
-	xrpusd: 5,
-	xrpeur: 5,
-	xrpbtc: 8,
-	usd: 2,
-	eur: 2,
-	btc: 8,
-	xrp: 8
-};
-
 const saldo = {
 	usd: 0,
 	eur: 0,
@@ -280,9 +267,9 @@ api.balance().then(data => {
 	}
 
 	console.info(JSON.stringify({
-		saldo: saldo,
-		book: book,
-		script: script
+		balances: saldo,
+		orders: book,
+		actions: script
 	}, null, "\t"));
 
 	if (argv.cancel)
