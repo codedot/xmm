@@ -146,8 +146,9 @@ function sequence()
 	});
 	const open = (acc, order) => acc.then(() => {
 		const pair = order.pair;
-		const amount = order.amount;
-		const price = order.price;
+		const prec = book[pair].prec;
+		const amount = order.amount.toFixed(prec.base);
+		const price = order.price.toFixed(prec.counter);
 		let p;
 
 		if ("ask" == order.type)
