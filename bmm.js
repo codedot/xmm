@@ -2,6 +2,7 @@
 
 "use strict";
 
+const info = require("./trading.json");
 const home = require("os").homedir();
 const path = require("path").join(home, ".bmm.json");
 const conf = require(path);
@@ -38,8 +39,8 @@ function estimate(order)
 	if (!base || !counter)
 		return;
 
-	ratio *= base + sign * volume - cost;
-	ratio *= counter - sign * amount;
+	ratio *= base - sign * amount;
+	ratio *= counter + sign * volume - cost;
 	ratio /= base * counter;
 	return ratio;
 }
@@ -55,8 +56,8 @@ function talmud(pair, type)
 	const order = {
 		pair: pair,
 		type: type,
-		amount: delta * counter / coef,
-		price: coef * base / counter
+		amount: delta * base / coef,
+		price: coef * counter / base
 	};
 
 	if (!base || !counter)
@@ -127,39 +128,53 @@ function cancel(order)
 	script.cancel.push(order);
 }
 
+function check(result)
+{
+	if ("error" == result.status)
+		throw result.reason;
+
+	console.info(result);
+	return result;
+}
+
 function sequence()
 {
 	const kill = (acc, order) => acc.then(() => {
-		return api.cancel_order(order.id);
+		const p = api.cancel_order(order.id);
+
+		return p.then(check);
 	});
 	const open = (acc, order) => acc.then(() => {
 		const pair = order.pair;
 		const amount = order.amount;
 		const price = order.price;
+		let p;
 
 		if ("ask" == order.type)
-			return api.sell(pair, amount, price);
+			p = api.sell(pair, amount, price);
 		else
-			return api.buy(pair, amount, price);
+			p = api.buy(pair, amount, price);
+
+		return p.then(check);
 	});
-	let p = Promise.resolve();
+	let seq = Promise.resolve();
 
-	p = script.cancel.reduce(kill, p);
-	p = script.create.reduce(open, p);
+	seq = script.cancel.reduce(kill, seq);
+	seq = script.create.reduce(open, seq);
 
-	return p;
+	return seq;
 }
 
 pairs.forEach(pair => {
-	const counter = pair.slice(0, 3);
-	const base = pair.slice(3);
+	const base = pair.slice(0, 3);
+	const counter = pair.slice(3);
 
 	saldo[counter] = true;
 	saldo[base] = true;
 
 	book[pair] = {
-		counter: pair.slice(0, 3),
-		base: pair.slice(3),
+		base: base,
+		counter: counter,
 		ask: {
 			active: []
 		},
@@ -175,6 +190,19 @@ for (const asset in saldo) {
 }
 
 assets.sort();
+
+info.forEach(line => {
+	const pair = line.url_symbol;
+	const entry = book[pair];
+
+	if (!entry)
+		return;
+
+	entry.prec = {
+		counter: line.counter_decimals,
+		base: line.base_decimals
+	};
+});
 
 api.balance().then(data => {
 	assets.forEach(asset => {
@@ -229,6 +257,8 @@ api.balance().then(data => {
 		actions: script
 	}, null, "\t"));
 
+	return sequence();
+}).then(() => {
 	process.exit();
 }).catch(abort);
 
