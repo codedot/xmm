@@ -128,35 +128,43 @@ function cancel(order)
 	script.cancel.push(order);
 }
 
-function check(result)
+function check(action)
 {
-	if ("error" == result.status)
-		throw result.reason;
+	return result => {
+		console.info(action);
 
-	console.info(result);
-	return result;
+		if ("error" == result.status)
+			throw result.reason;
+
+		console.info(result);
+		return result;
+	};
 }
 
 function sequence()
 {
 	const kill = (acc, order) => acc.then(() => {
-		const p = api.cancel_order(order.id);
+		const id = order.id;
+		const p = api.cancel_order(id);
 
-		return p.then(check);
+		return p.then(check(`kill ${id}`));
 	});
 	const open = (acc, order) => acc.then(() => {
 		const pair = order.pair;
 		const prec = book[pair].prec;
 		const amount = order.amount.toFixed(prec.base);
 		const price = order.price.toFixed(prec.counter);
+		const type = order.type;
+		const param = `${amount} @ ${price}`;
+		const desc = `${type} ${pair} ${param}`;
 		let p;
 
-		if ("ask" == order.type)
+		if ("ask" == type)
 			p = api.sell(pair, amount, price);
 		else
 			p = api.buy(pair, amount, price);
 
-		return p.then(check);
+		return p.then(check(desc));
 	});
 	let seq = Promise.resolve();
 
