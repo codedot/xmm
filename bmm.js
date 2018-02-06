@@ -9,6 +9,8 @@ const conf = require(path);
 const Bitstamp = require("bitstamp-promise");
 const api = new Bitstamp(conf.key, conf.secret, conf.id);
 const delta = conf.delta;
+const origin = new Date(conf.origin);
+const init = conf.init;
 const pairs = conf.pairs.sort();
 const saldo = {};
 const book = {};
@@ -174,6 +176,27 @@ function sequence()
 	return seq;
 }
 
+function gm(d)
+{
+	const p = assets.reduce((a, x) => a * d[x], 1);
+
+	return Math.pow(p, 1 / assets.length);
+}
+
+function getprofit()
+{
+	const gm0 = gm(init);
+	const gm1 = gm(saldo);
+	const ratio = gm1 / gm0;
+	const profit = `${(1e4 * (ratio - 1)).toFixed(2)}bp`;
+	const period = Date.now() - origin.getTime();
+	const year = 365.25 * 24 * 60 * 60 * 1e3;
+	const annual = Math.pow(ratio, year / period);
+	const apercent = `${(100 * (annual - 1)).toFixed(2)}%`;
+
+	return `${gm1.toPrecision(8)} ${profit} ${apercent}`;
+}
+
 pairs.forEach(pair => {
 	const base = pair.slice(0, 3);
 	const counter = pair.slice(3);
@@ -220,6 +243,8 @@ api.balance().then(data => {
 		saldo[asset] = parseFloat(value);
 	});
 
+	console.info(`GM ${getprofit()}`);
+
 	pairs.forEach(pair => {
 		const entry = book[pair];
 		const fee = data[`${pair}_fee`];
@@ -259,12 +284,6 @@ api.balance().then(data => {
 		decide(entry.ask);
 		decide(entry.bid);
 	});
-
-	console.info(JSON.stringify({
-		balances: saldo,
-		orders: book,
-		actions: script
-	}, null, "\t"));
 
 	return sequence();
 }).then(() => {
