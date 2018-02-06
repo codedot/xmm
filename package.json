@@ -3,8 +3,7 @@
 	"bin": "./bmm.js",
 	"version": "0.0.0",
 	"dependencies": {
-		"yargs": "7.1.0",
-		"bitstamp-promise": "1.0.1"
+		"bitstamp-promise": "1.1.0"
 	},
 	"private": true
 }

@@ -2,46 +2,17 @@
 
 "use strict";
 
+const home = require("os").homedir();
+const path = require("path").join(home, ".bmm.json");
+const conf = require(path);
 const Bitstamp = require("bitstamp-promise");
-const env = process.env;
-const key = env.BITSTAMP_KEY;
-const secret = env.BITSTAMP_SECRET;
-const id = env.BITSTAMP_ID;
-const api = new Bitstamp(key, secret, id);
+const api = new Bitstamp(conf.key, conf.secret, conf.id);
+const delta = conf.delta;
+const assets = conf.assets;
+const pairs = conf.pairs;
 
-const opts = {
-	cancel: {
-		alias: "c",
-		describe: "Cancel all orders",
-		type: "boolean"
-	},
-	delta: {
-		alias: "d",
-		describe: "Stake to trade",
-		default: 0.01
-	},
-	timeout: {
-		alias: "t",
-		describe: "Timeout in seconds",
-		default: 30
-	},
-	update: {
-		alias: "u",
-		describe: "Update orders",
-		type: "boolean"
-	}
-};
-
-const argv = require("yargs")
-	.usage("Usage: $0 [options]")
-	.options(opts)
-	.strict()
-	.help()
-	.alias("help", "h")
-	.wrap(50)
-	.argv;
-
-const delta = argv.delta;
+console.log(conf);
+process.exit();
 
 const saldo = {
 	usd: 0,
