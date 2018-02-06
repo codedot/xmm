@@ -8,46 +8,10 @@ const conf = require(path);
 const Bitstamp = require("bitstamp-promise");
 const api = new Bitstamp(conf.key, conf.secret, conf.id);
 const delta = conf.delta;
-const assets = conf.assets;
-const pairs = conf.pairs;
-
-console.log(conf);
-process.exit();
-
-const saldo = {
-	usd: 0,
-	eur: 0,
-	btc: 0,
-	xrp: 0
-};
-
-const book = {
-	btcusd: {
-		counter: "btc",
-		base: "usd"
-	},
-	btceur: {
-		counter: "btc",
-		base: "eur"
-	},
-	eurusd: {
-		counter: "eur",
-		base: "usd"
-	},
-	xrpusd: {
-		counter: "xrp",
-		base: "usd"
-	},
-	xrpeur: {
-		counter: "xrp",
-		base: "eur"
-	},
-	xrpbtc: {
-		counter: "xrp",
-		base: "btc"
-	}
-};
-
+const pairs = conf.pairs.sort();
+const saldo = {};
+const book = {};
+const assets = [];
 const script = {
 	cancel: [],
 	create: []
@@ -186,28 +150,47 @@ function sequence()
 	return p;
 }
 
+pairs.forEach(pair => {
+	const counter = pair.slice(0, 3);
+	const base = pair.slice(3);
+
+	saldo[counter] = true;
+	saldo[base] = true;
+
+	book[pair] = {
+		counter: pair.slice(0, 3),
+		base: pair.slice(3),
+		ask: {
+			active: []
+		},
+		bid: {
+			active: []
+		}
+	};
+});
+
+for (const asset in saldo) {
+	saldo[asset] = {};
+	assets.push(asset);
+}
+
+assets.sort();
+
 api.balance().then(data => {
-	for (const asset in saldo) {
+	assets.forEach(asset => {
 		const value = data[`${asset}_balance`];
 
 		saldo[asset] = parseFloat(value);
-	}
+	});
 
-	for (const pair in book) {
+	pairs.forEach(pair => {
 		const entry = book[pair];
 		const fee = data[`${pair}_fee`];
 
 		entry.fee = parseFloat(fee) / 100;
-
-		entry.ask = {
-			proper: talmud(pair, "ask"),
-			active: []
-		};
-		entry.bid = {
-			proper: talmud(pair, "bid"),
-			active: []
-		};
-	}
+		entry.ask.proper = talmud(pair, "ask");
+		entry.bid.proper = talmud(pair, "bid");
+	});
 
 	return api.open_orders("all");
 }).then(data => {
@@ -218,6 +201,9 @@ api.balance().then(data => {
 			.map(asset => asset.toLowerCase())
 			.join("");
 		const entry = book[pair];
+
+		if (!entry)
+			return;
 
 		line.pair = pair;
 		line.type = type;
@@ -230,12 +216,12 @@ api.balance().then(data => {
 		entry[type].active.push(line);
 	});
 
-	for (const pair in book) {
+	pairs.forEach(pair => {
 		const entry = book[pair];
 
 		decide(entry.ask);
 		decide(entry.bid);
-	}
+	});
 
 	console.info(JSON.stringify({
 		balances: saldo,
@@ -243,16 +229,9 @@ api.balance().then(data => {
 		actions: script
 	}, null, "\t"));
 
-	if (argv.cancel)
-		return api.cancel_all_orders();
-	else if (argv.update)
-		return sequence();
-	else
-		return Promise.resolve();
-}).then(() => {
 	process.exit();
 }).catch(abort);
 
 setTimeout(() => {
 	abort("Timed out");
-}, argv.timeout * 1e3);
+}, conf.timeout * 1e3);
