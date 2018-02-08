@@ -101,10 +101,12 @@ function diff(x, ref)
 
 function isbad(order, proper)
 {
-	if (diff(order.ratio, proper.ratio) > delta)
+	const thres = delta / 2;
+
+	if (diff(order.ratio - 1, proper.ratio - 1) > thres)
 		return true;
 
-	if (diff(order.price, proper.price) > delta)
+	if (diff(order.price, proper.price) > thres)
 		return true;
 
 	return false;
