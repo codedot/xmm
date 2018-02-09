@@ -185,18 +185,20 @@ function gm(d)
 	return Math.pow(p, 1 / assets.length);
 }
 
-function getprofit()
+function stats()
 {
+	const now = new Date();
 	const gm0 = gm(init);
 	const gm1 = gm(saldo);
 	const ratio = gm1 / gm0;
 	const profit = `${(1e4 * (ratio - 1)).toFixed(2)}bp`;
-	const period = Date.now() - origin.getTime();
+	const period = now.getTime() - origin.getTime();
 	const year = 365.25 * 24 * 60 * 60 * 1e3;
 	const annual = Math.pow(ratio, year / period);
 	const apercent = `${(100 * (annual - 1)).toFixed(2)}%`;
+	const time = now.toISOString();
 
-	return `${gm1.toPrecision(8)} ${profit} ${apercent}`;
+	console.info(`${time} ${profit} ${apercent}`);
 }
 
 pairs.forEach(pair => {
@@ -245,7 +247,7 @@ api.balance().then(data => {
 		saldo[asset] = parseFloat(value);
 	});
 
-	console.info(`GM ${getprofit()}`);
+	stats();
 
 	pairs.forEach(pair => {
 		const entry = book[pair];
