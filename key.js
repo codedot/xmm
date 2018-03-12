@@ -21,7 +21,7 @@ function xor(a, b)
 	const x = [];
 	const n = a.length;
 
-	assert.equal(a.length, b.length);
+	assert.equal(n, b.length);
 
 	for (let i = 0; i < n; i++)
 		x.push(a[i] ^ b[i]);
@@ -35,8 +35,9 @@ function sign(socket)
 	const server = socket.getPeerFinished();
 	const mix = xor(sha512(client), sha512(server));
 	const shared = sha512(mix).slice(0, 32);
+	const sig = secp256k1.sign(shared, key).signature;
 
-	return secp256k1.sign(shared, key).signature;
+	return secp256k1.signatureExport(sig);
 }
 
 ecdh.generateKeys();
