@@ -2,9 +2,12 @@
 
 const assert = require("assert");
 const crypto = require("crypto");
+const bs58 = require("bs58");
+const secp256k1 = require("secp256k1");
 const ecdh = crypto.createECDH("secp256k1");
-const pub = ecdh.generateKeys("base64", "compressed");
-const priv = ecdh.getPrivateKey("base64");
+const pub = ecdh.generateKeys("hex", "compressed");
+const priv = ecdh.getPrivateKey();
+const pub2 = secp256k1.publicKeyCreate(priv);
 const sha512 = data => {
 	const hash = crypto.createHash("sha512");
 
@@ -28,17 +31,15 @@ const socket = require("tls").connect({
 }, () => {
 	const client = socket.getFinished().toString("hex");
 	const server = socket.getPeerFinished().toString("hex");
-	const sha1 = sha512(client);
-	const sha2 = sha512(server);
-	const mix = xor(sha1, sha2);
+	const mix = xor(sha512(client), sha512(server));
 	const shared = sha512(mix).slice(0, 32);
+	const sig = secp256k1.sign(shared, priv).signature;
+	const base64 = sig.toString("base64");
 
-	console.info(client, server);
-	console.info(sha1.toString("hex"));
-	console.info(sha2.toString("hex"));
-	console.info(mix.toString("hex"));
-	console.info(shared.toString("hex"));
+	console.log(`Session-Signature: ${base64}`);
 	socket.end();
 });
 
-console.info(pub, priv);
+assert(secp256k1.privateKeyVerify(priv));
+
+console.info(`Public-Key: ${bs58.encode(pub2)}`);
