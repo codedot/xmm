@@ -2,16 +2,24 @@
 
 const key = require("./key");
 
-const tls = require("tls");
+const req = require("https").request({
+	hostname: "r.ripple.com",
+	port: 51235,
+	headers: {
+		"Upgrade": "RTXP/1.2",
+		"Connection": "Upgrade"
+	}
+}, res => {
+	console.log(res.statusCode, res.statusMessage);
+	process.exit();
+});
 
-const socket = tls.connect({
-	host: "r.ripple.com",
-	port: 51235
-}, () => {
-	const sig = key.sign(socket).toString("base64");
+req.on("socket", socket => {
+	socket.on("secureConnect", () => {
+		const sig = key.sign(socket).toString("base64");
 
-	console.info(`Public-Key: ${key.pub}`);
-	console.info(`Session-Signature: ${sig}`);
-
-	socket.end();
+		req.setHeader("Public-Key", key.pub);
+		req.setHeader("Session-Signature", sig);
+		req.end();
+	});
 });
