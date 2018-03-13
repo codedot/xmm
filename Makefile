@@ -3,3 +3,4 @@ all:
 	node daemon.js
 
 clean:
+	-rm -fr node_modules

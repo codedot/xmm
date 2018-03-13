@@ -8,11 +8,30 @@ const req = require("https").request({
 	headers: {
 		"Upgrade": "RTXP/1.2",
 		"Connection": "Upgrade"
-	}
+	},
+	rejectUnauthorized: false,
+	timeout: 5e3
 }, res => {
-	console.log(res.statusCode, res.statusMessage);
-	process.exit();
+	const status = res.statusCode;
+
+	console.log(status, res.headers);
+
+	if (101 != status)
+		consume(res);
 });
+
+function consume(res)
+{
+	const chunks = [];
+
+	res.setEncoding("utf8");
+	res.on("data", chunk => {
+		chunks.push(chunk);
+	});
+	res.on("end", () => {
+		console.log(chunks.join(""));
+	});
+}
 
 req.on("socket", socket => {
 	socket.on("secureConnect", () => {
