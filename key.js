@@ -1,12 +1,40 @@
 "use strict";
 
 const assert = require("assert");
+const basex = require("base-x");
 const crypto = require("crypto");
-const bs58 = require("bs58");
-const secp256k1 = require("secp256k1");
+const elliptic = require("elliptic");
 
-const ecdh = crypto.createECDH("secp256k1");
-let key;
+const abc = "rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz";
+const base58 = basex(abc);
+const ec = new elliptic.ec("secp256k1");
+const key = ec.genKeyPair();
+
+function sha256(data)
+{
+	const hash = crypto.createHash("sha256");
+
+	hash.update(data);
+	return hash.digest();
+}
+
+function cksum(data)
+{
+	data = sha256(data);
+	data = sha256(data);
+	return data.slice(0, 4);
+}
+
+function derive()
+{
+	const type = Buffer.from([28]);
+	const pub = key.getPublic();
+	const raw = Buffer.from(pub.encodeCompressed());
+	const sum = cksum(Buffer.concat([type, raw]));
+	const buf = Buffer.concat([type, raw, sum]);
+
+	return base58.encode(buf);
+}
 
 function sha512(data)
 {
@@ -29,20 +57,14 @@ function xor(a, b)
 	return Buffer.from(x);
 }
 
-function sign(socket)
-{
+exports.sign = socket => {
 	const client = socket.getFinished();
 	const server = socket.getPeerFinished();
 	const mix = xor(sha512(client), sha512(server));
 	const shared = sha512(mix).slice(0, 32);
-	const sig = secp256k1.sign(shared, key).signature;
+	const der = key.sign(shared).toDER();
 
-	return secp256k1.signatureExport(sig);
+	return Buffer.from(der);
 }
 
-ecdh.generateKeys();
-key = ecdh.getPrivateKey();
-assert(secp256k1.privateKeyVerify(key));
-
-exports.sign = sign;
-exports.pub = bs58.encode(secp256k1.publicKeyCreate(key));
+exports.pub = derive();
