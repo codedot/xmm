@@ -27,8 +27,7 @@ module.exports = peer => new Promise((resolve, reject) => {
 			"Upgrade": "RTXP/1.2",
 			"Connection": "Upgrade"
 		},
-		rejectUnauthorized: false,
-		timeout: 5e3
+		rejectUnauthorized: false
 	}, msg => {
 		const status = msg.statusCode;
 		const headers = msg.headers;
@@ -49,9 +48,6 @@ module.exports = peer => new Promise((resolve, reject) => {
 		}).catch(reject);
 	});
 
-	req.on("timeout", () => {
-		throw "Timeout";
-	});
 	req.on("socket", socket => {
 		socket.on("secureConnect", () => {
 			const proof = key.sign(socket);

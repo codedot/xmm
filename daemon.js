@@ -1,11 +1,16 @@
 "use strict";
 
 const connect = require("./connect");
+const ips = require("./ips.json");
 
-connect("r.ripple.com:51235").then(res => {
-	console.info(res);
-	process.exit();
-}).catch(err => {
-	console.warn(err);
-	process.exit(1);
+ips.overlay.active.map(entry => {
+	const ip = entry.ip;
+	const port = entry.port;
+
+	if (ip && port)
+		return `${ip}:${port}`;
+}).filter(peer => !!peer).forEach(peer => {
+	connect(peer).then(res => {
+		console.log(res);
+	});
 });
