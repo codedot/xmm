@@ -37,17 +37,22 @@ module.exports = peer => new Promise((resolve, reject) => {
 			headers: headers
 		};
 
-		if (101 == status) {
-			resolve(res);
-			return;
-		}
-
 		consume(msg).then(body => {
 			res.body = body;
 			resolve(res);
 		}).catch(reject);
 	});
 
+	req.on("upgrade", msg => {
+		const status = msg.statusCode;
+		const headers = msg.headers;
+
+		resolve({
+			peer: peer,
+			status: status,
+			headers: headers
+		});
+	});
 	req.on("socket", socket => {
 		socket.on("secureConnect", () => {
 			const proof = key.sign(socket);
