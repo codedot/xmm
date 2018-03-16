@@ -20,14 +20,14 @@ server.listen(() => {
 		console.log("Response", res);
 	});
 });
-server.on("upgrade", (req, socket) => {
+server.on("upgrade", (msg, socket) => {
 	const sig = key.sign(socket, "base64");
 
 	console.log("Request", {
-		method: req.method,
-		url: req.url,
-		headers: req.headers,
-		check: key.verify(req)
+		method: msg.method,
+		url: msg.url,
+		headers: msg.headers,
+		check: key.verify(msg)
 	});
 	socket.write([
 		"HTTP/1.1 101 Switching Protocols",
