@@ -1,6 +1,7 @@
 "use strict";
 
 const connect = require("./connect");
+const verify = require("./verify");
 
 const fs = require("fs");
 const https = require("https");
@@ -27,7 +28,8 @@ server.on("upgrade", (req, socket) => {
 	console.log("Request", {
 		method: req.method,
 		url: req.url,
-		headers: headers
+		headers: headers,
+		check: verify(req)
 	});
 	socket.write([
 		"HTTP/1.1 101 Switching Protocols",
