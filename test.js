@@ -2,7 +2,6 @@
 
 const connect = require("./connect");
 const key = require("./key");
-const verify = require("./verify");
 
 const fs = require("fs");
 const https = require("https");
@@ -28,7 +27,7 @@ server.on("upgrade", (req, socket) => {
 		method: req.method,
 		url: req.url,
 		headers: req.headers,
-		check: verify(req)
+		check: key.verify(req)
 	});
 	socket.write([
 		"HTTP/1.1 101 Switching Protocols",

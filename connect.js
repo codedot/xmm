@@ -1,7 +1,6 @@
 "use strict";
 
 const key = require("./key");
-const verify = require("./verify");
 
 const https = require("https");
 
@@ -52,7 +51,7 @@ module.exports = peer => new Promise((resolve, reject) => {
 			peer: peer,
 			status: status,
 			headers: headers,
-			check: verify(msg)
+			check: key.verify(msg)
 		});
 	});
 	req.on("socket", socket => {
