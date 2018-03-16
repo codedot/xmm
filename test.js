@@ -1,6 +1,7 @@
 "use strict";
 
 const connect = require("./connect");
+const key = require("./key");
 const verify = require("./verify");
 
 const fs = require("fs");
@@ -21,21 +22,19 @@ server.listen(() => {
 	});
 });
 server.on("upgrade", (req, socket) => {
-	const headers = req.headers;
-	const pub = headers["public-key"];
-	const sig = headers["session-signature"];
+	const sig = key.sign(socket, "base64");
 
 	console.log("Request", {
 		method: req.method,
 		url: req.url,
-		headers: headers,
+		headers: req.headers,
 		check: verify(req)
 	});
 	socket.write([
 		"HTTP/1.1 101 Switching Protocols",
 		"Upgrade: RTXP/1.2",
 		"Connection: Upgrade",
-		`Public-Key: ${pub}`,
+		`Public-Key: ${key.pub}`,
 		`Session-Signature: ${sig}`,
 		"", ""
 	].join("\r\n"));

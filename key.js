@@ -21,12 +21,16 @@ function derive()
 }
 
 exports.pub = derive();
-exports.sign = socket => {
+exports.sign = (socket, enc) => {
 	const shared = mkshared([
 		socket.getFinished(),
 		socket.getPeerFinished()
 	]);
 	const der = key.sign(shared).toDER();
+	const buf = Buffer.from(der);
 
-	return Buffer.from(der);
+	if (enc)
+		return buf.toString(enc);
+	else
+		return buf;
 }

@@ -1,6 +1,7 @@
 "use strict";
 
 const key = require("./key");
+const verify = require("./verify");
 
 const https = require("https");
 
@@ -50,13 +51,13 @@ module.exports = peer => new Promise((resolve, reject) => {
 		resolve({
 			peer: peer,
 			status: status,
-			headers: headers
+			headers: headers,
+			check: verify(msg)
 		});
 	});
 	req.on("socket", socket => {
 		socket.on("secureConnect", () => {
-			const proof = key.sign(socket);
-			const sig = proof.toString("base64");
+			const sig = key.sign(socket, "base64");
 
 			req.setHeader("Public-Key", key.pub);
 			req.setHeader("Session-Signature", sig);
