@@ -62,5 +62,18 @@ module.exports = peer => new Promise((resolve, reject) => {
 			req.setHeader("Session-Signature", sig);
 			req.end();
 		});
+		socket.setTimeout(3e3, () => {
+			req.abort();
+			resolve({
+				peer: peer,
+				error: "timeout"
+			});
+		});
+	});
+	req.on("error", error => {
+		resolve({
+			peer: peer,
+			error: error
+		});
 	});
 });
