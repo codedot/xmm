@@ -45,7 +45,7 @@ const init = new Promise(resolve => https.get(url, msg => {
 
 exports.add = add;
 exports.get = () => init.then(() => {
-	const peer = ips.shift();
+	const peer = ips.pop();
 
 	if (!peer)
 		throw "No peers left";
