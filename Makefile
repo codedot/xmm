@@ -1,7 +1,7 @@
 all:
 	npm install
 	node test.js
-	node ips.js
+	node daemon.js
 
 clean:
 	-rm -fr node_modules
