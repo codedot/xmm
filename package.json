@@ -4,7 +4,16 @@
 	"repository": "codedot/xmm",
 	"name": "xmm",
 	"bin": "./xmm.js",
-	"version": "0.3.3",
+	"version": "0.3.4",
+	"keywords": [
+		"ripple",
+		"api",
+		"cli",
+		"talmud",
+		"market-maker",
+		"trading",
+		"bot"
+	],
 	"license": "MIT",
 	"dependencies": {
 		"ripple-lib": "0.17.7",
