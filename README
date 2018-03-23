@@ -1,7 +1,7 @@
 docker build --tag rippled .
-docker run --detach --memory 6g \
+docker run --detach --memory 4g --cpus 1 \
 	--publish 127.0.0.1:5006:5006 \
-	--publish 127.0.0.1:51235:51235 \
+	--publish 51235:51235 \
 	--name=rippled --rm rippled
 docker logs --follow --since 10m rippled
 docker stop rippled
