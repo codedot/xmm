@@ -7,6 +7,6 @@ const zigzag = require(".");
 const arg = process.argv.pop();
 const json = `[${arg}]`;
 const prices = JSON.parse(json);
-const total = zigzag(prices);
+const res = zigzag(prices);
 
-console.info(total);
+console.info(res);
