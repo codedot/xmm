@@ -1,8 +1,10 @@
 "use strict";
 
-const mean = (a, b) => (a + b) / 2;
-const geomean = (a, b) => Math.sqrt(a * b);
-const profit = (a, b) => mean(a, b) / geomean(a, b);
+const profit = (a, b) => {
+	const r = Math.sqrt(a / b);
+
+	return (r + 1 / r) / 2;
+};
 const ratio = (a, b) => Math.max(a, b) / Math.min(a, b);
 const zigzag = prices => prices.reduce((res, price) => {
 	res.ratio *= ratio(res.price, price);
