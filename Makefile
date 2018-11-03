@@ -1,7 +1,6 @@
 all:
 	npm install
-	node test.js
-	node daemon.js
+	node local.js
 
 clean:
 	-rm -fr node_modules

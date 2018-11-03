@@ -24,6 +24,7 @@ module.exports = peer => new Promise((resolve, reject) => {
 		hostname: host,
 		port: port,
 		headers: {
+			"Connect-As": "Peer",
 			"Upgrade": "RTXP/1.2",
 			"Connection": "Upgrade"
 		},
