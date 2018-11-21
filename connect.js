@@ -4,19 +4,7 @@ const key = require("./key");
 
 const https = require("https");
 
-const consume = msg => new Promise(resolve => {
-	const chunks = [];
-
-	msg.setEncoding("utf8");
-	msg.on("data", chunk => {
-		chunks.push(chunk);
-	});
-	msg.on("end", () => {
-		resolve(chunks.join(""));
-	});
-});
-
-module.exports = peer => new Promise((resolve, reject) => {
+module.exports = peer => new Promise(resolve => {
 	const address = peer.split(":");
 	const host = address.shift();
 	const port = parseInt(address.shift());
@@ -30,6 +18,7 @@ module.exports = peer => new Promise((resolve, reject) => {
 		},
 		rejectUnauthorized: false
 	}, msg => {
+		const chunks = [];
 		const status = msg.statusCode;
 		const headers = msg.headers;
 		const res = {
@@ -38,13 +27,17 @@ module.exports = peer => new Promise((resolve, reject) => {
 			headers: headers
 		};
 
-		consume(msg).then(body => {
-			res.body = body;
+		msg.setEncoding("utf8");
+		msg.on("data", chunk => {
+			chunks.push(chunk);
+		});
+		msg.on("end", () => {
+			res.body = chunks.join("");
 			resolve(res);
-		}).catch(reject);
+		});
 	});
 
-	req.on("upgrade", msg => {
+	req.on("upgrade", (msg, socket, data) => {
 		const status = msg.statusCode;
 		const headers = msg.headers;
 
@@ -52,6 +45,8 @@ module.exports = peer => new Promise((resolve, reject) => {
 			peer: peer,
 			status: status,
 			headers: headers,
+			socket: socket,
+			data: data,
 			check: key.verify(msg)
 		});
 	});
@@ -67,14 +62,14 @@ module.exports = peer => new Promise((resolve, reject) => {
 			req.abort();
 			resolve({
 				peer: peer,
-				error: "timeout"
+				status: "timeout"
 			});
 		});
 	});
 	req.on("error", error => {
 		resolve({
 			peer: peer,
-			error: error
+			status: error.code
 		});
 	});
 });
